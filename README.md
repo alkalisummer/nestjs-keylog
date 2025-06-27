@@ -1,2 +1,2 @@
 # nestjs-keylog
-backend server for keylog
+nest.js backend server for keylog

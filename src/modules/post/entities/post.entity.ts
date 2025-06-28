@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { PostTag } from '../../post-tag/entities/post-tag.entity';
 
 @Entity('POST')
 export class Post {
@@ -36,4 +37,7 @@ export class Post {
 
   @Column({ name: 'amnt_dttm', type: 'char', length: 14 })
   amntDttm: string;
+
+  @OneToMany(() => PostTag, (postTag) => postTag.post)
+  postTags: PostTag[];
 }

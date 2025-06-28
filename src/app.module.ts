@@ -3,6 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostModule } from './modules/post/post.module';
 import { UserModule } from './modules/user/user.module';
+import { CommentModule } from './modules/comment/comment.module';
+import { HashtagModule } from './modules/hashtag/hashtag.module';
+import { PostTagModule } from './modules/post-tag/post-tag.module';
+import { LikeModule } from './modules/like/like.module';
 
 @Module({
   imports: [
@@ -25,6 +29,10 @@ import { UserModule } from './modules/user/user.module';
     }),
     PostModule,
     UserModule,
+    CommentModule,
+    HashtagModule,
+    PostTagModule,
+    LikeModule,
   ],
 })
 export class AppModule {}

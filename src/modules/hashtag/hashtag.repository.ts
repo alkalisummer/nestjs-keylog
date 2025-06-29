@@ -36,8 +36,8 @@ export class HashtagRepository {
         'B.hashtag_name AS HASHTAG_NAME',
         'C.rgsn_dttm AS RGSN_DTTM',
       ])
-      .leftJoin('post_tag', 'A', 'A.hashtag_id = B.hashtag_id')
-      .leftJoin('post', 'C', 'A.post_id = C.post_id')
+      .leftJoin('POST_TAG', 'A', 'A.hashtag_id = B.hashtag_id')
+      .leftJoin('POST', 'C', 'A.post_id = C.post_id')
       .where('1=1');
 
     if (postId) {
@@ -60,8 +60,8 @@ export class HashtagRepository {
     const result: HashtagCount[] = await this.hashtagRepository
       .createQueryBuilder('B')
       .select(['A.hashtag_id AS HASHTAG_ID', 'B.hashtag_name AS HASHTAG_NAME', 'COUNT(*) AS HASHTAG_CNT'])
-      .leftJoin('post_tag', 'A', 'A.hashtag_id = B.hashtag_id')
-      .leftJoin('post', 'C', 'A.post_id = C.post_id')
+      .leftJoin('POST_TAG', 'A', 'A.hashtag_id = B.hashtag_id')
+      .leftJoin('POST', 'C', 'A.post_id = C.post_id')
       .where('C.rgsr_id = :userId', { userId })
       .andWhere('C.temp_yn = :tempYn', { tempYn: 'N' })
       .groupBy('A.hashtag_id')

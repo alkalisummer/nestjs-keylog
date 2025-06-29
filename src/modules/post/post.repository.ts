@@ -74,11 +74,11 @@ export class PostRepository {
         'COUNT(DISTINCT C.comment_id) AS COMMENT_CNT',
         'COUNT(DISTINCT D.likeact_id) AS LIKE_CNT',
       ])
-      .leftJoin('user', 'B', 'A.rgsr_id = B.user_id')
-      .leftJoin('comment', 'C', 'A.post_id = C.post_id')
-      .leftJoin('likeact', 'D', 'A.post_id = D.post_id')
-      .leftJoin('post_tag', 'E', 'A.post_id = E.post_id')
-      .leftJoin('hashtag', 'F', 'E.hashtag_id = F.hashtag_id')
+      .leftJoin('USER', 'B', 'A.rgsr_id = B.user_id')
+      .leftJoin('COMMENT', 'C', 'A.post_id = C.post_id')
+      .leftJoin('LIKEACT', 'D', 'A.post_id = D.post_id')
+      .leftJoin('POST_TAG', 'E', 'A.post_id = E.post_id')
+      .leftJoin('HASHTAG', 'F', 'E.hashtag_id = F.hashtag_id')
       .where('(A.post_origin_id IS NULL OR A.post_origin_id = :emptyString)', {
         emptyString: '',
       })
@@ -200,7 +200,7 @@ export class PostRepository {
         'A.rgsn_dttm AS RGSN_DTTM',
         'COUNT(B.likeact_id) AS LIKE_CNT',
       ])
-      .leftJoin('likeact', 'B', 'A.post_id = B.post_id')
+      .leftJoin('LIKEACT', 'B', 'A.post_id = B.post_id')
       .where('A.rgsr_id = :rgsrId', { rgsrId })
       .andWhere('A.temp_yn = :tempYn', { tempYn: 'N' })
       .groupBy('A.post_id');

@@ -54,8 +54,8 @@ export class PostTagRepository {
         'p.post_title AS POST_TITLE',
         'p.rgsn_dttm AS RGSN_DTTM',
       ])
-      .leftJoin('hashtag', 'h', 'pt.hashtag_id = h.hashtag_id')
-      .leftJoin('post', 'p', 'pt.post_id = p.post_id')
+      .leftJoin('HASHTAG', 'h', 'pt.hashtag_id = h.hashtag_id')
+      .leftJoin('POST', 'p', 'pt.post_id = p.post_id')
       .where('pt.post_id = :postId', { postId })
       .getRawMany();
 
@@ -73,8 +73,8 @@ export class PostTagRepository {
         'p.post_title AS POST_TITLE',
         'p.rgsn_dttm AS RGSN_DTTM',
       ])
-      .leftJoin('hashtag', 'h', 'pt.hashtag_id = h.hashtag_id')
-      .leftJoin('post', 'p', 'pt.post_id = p.post_id')
+      .leftJoin('HASHTAG', 'h', 'pt.hashtag_id = h.hashtag_id')
+      .leftJoin('POST', 'p', 'pt.post_id = p.post_id')
       .where('pt.hashtag_id = :hashtagId', { hashtagId })
       .andWhere('p.temp_yn = :tempYn', { tempYn: 'N' })
       .orderBy('p.rgsn_dttm', 'DESC')
@@ -94,8 +94,8 @@ export class PostTagRepository {
         'p.post_title AS POST_TITLE',
         'p.rgsn_dttm AS RGSN_DTTM',
       ])
-      .leftJoin('hashtag', 'h', 'pt.hashtag_id = h.hashtag_id')
-      .leftJoin('post', 'p', 'pt.post_id = p.post_id')
+      .leftJoin('HASHTAG', 'h', 'pt.hashtag_id = h.hashtag_id')
+      .leftJoin('POST', 'p', 'pt.post_id = p.post_id')
       .where('p.rgsr_id = :userId', { userId })
       .andWhere('p.temp_yn = :tempYn', { tempYn: 'N' })
       .orderBy('p.rgsn_dttm', 'DESC')

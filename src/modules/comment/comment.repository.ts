@@ -46,28 +46,28 @@ export class CommentRepository {
   async getCommentList(params: CommentListQueryDto): Promise<CommentListItem[]> {
     const { postId } = params;
 
-    const query = `
-      SELECT A.COMMENT_ID,
-             A.COMMENT_DEPTH,
-             A.COMMENT_ORIGIN_ID,
-             A.COMMENT_CNTN,
-             A.RGSR_ID,
-             A.RGSN_DTTM,
-             B.USER_NICKNAME,
-             B.USER_THMB_IMG_URL,
-             COUNT(C.COMMENT_ID) AS REPLY_CNT
-      FROM COMMENT A 
-      LEFT JOIN USER B 
-        ON A.RGSR_ID = B.USER_ID 
-      LEFT JOIN COMMENT C
-        ON A.COMMENT_ID = C.COMMENT_ORIGIN_ID
-       AND C.COMMENT_DEPTH = 2
-      WHERE A.POST_ID = ?
-      GROUP BY A.COMMENT_ID
-      ORDER BY A.COMMENT_DEPTH ASC, A.RGSN_DTTM ASC
-    `;
+    const result: CommentListItem[] = await this.commentRepository
+      .createQueryBuilder('A')
+      .select([
+        'A.comment_id AS COMMENT_ID',
+        'A.comment_depth AS COMMENT_DEPTH',
+        'A.comment_origin_id AS COMMENT_ORIGIN_ID',
+        'A.comment_cntn AS COMMENT_CNTN',
+        'A.rgsr_id AS RGSR_ID',
+        'A.rgsn_dttm AS RGSN_DTTM',
+        'B.user_nickname AS USER_NICKNAME',
+        'B.user_thmb_img_url AS USER_THMB_IMG_URL',
+        'COUNT(C.comment_id) AS REPLY_CNT',
+      ])
+      .leftJoin('USER', 'B', 'A.rgsr_id = B.user_id')
+      .leftJoin('COMMENT', 'C', 'A.comment_id = C.comment_origin_id AND C.comment_depth = 2')
+      .where('A.post_id = :postId', { postId })
+      .groupBy('A.comment_id')
+      .orderBy('A.comment_depth', 'ASC')
+      .addOrderBy('A.rgsn_dttm', 'ASC')
+      .getRawMany();
 
-    return this.commentRepository.query(query, [postId]);
+    return result;
   }
 
   async createComment(createCommentDto: CreateCommentDto): Promise<Comment> {
@@ -122,23 +122,23 @@ export class CommentRepository {
   }
 
   async getRecentComments(rgsrId: string, limit: number = 3): Promise<RecentComment[]> {
-    const query = `
-      SELECT A.COMMENT_ID AS COMMENT_ID,
-             A.COMMENT_CNTN AS COMMENT_CNTN,
-             A.RGSN_DTTM AS RGSN_DTTM,
-             A.POST_ID AS POST_ID,
-             A.RGSR_ID AS RGSR_ID,
-             C.USER_NICKNAME AS USER_NICKNAME
-      FROM COMMENT A
-      LEFT JOIN POST B              
-        ON A.POST_ID = B.POST_ID 
-      LEFT JOIN USER C
-        ON A.RGSR_ID = C.USER_ID
-      WHERE B.RGSR_ID = ?
-      ORDER BY A.RGSN_DTTM DESC
-      LIMIT ?
-    `;
+    const result: RecentComment[] = await this.commentRepository
+      .createQueryBuilder('A')
+      .select([
+        'A.comment_id AS COMMENT_ID',
+        'A.comment_cntn AS COMMENT_CNTN',
+        'A.rgsn_dttm AS RGSN_DTTM',
+        'A.post_id AS POST_ID',
+        'A.rgsr_id AS RGSR_ID',
+        'C.user_nickname AS USER_NICKNAME',
+      ])
+      .leftJoin('POST', 'B', 'A.post_id = B.post_id')
+      .leftJoin('USER', 'C', 'A.rgsr_id = C.user_id')
+      .where('B.rgsr_id = :rgsrId', { rgsrId })
+      .orderBy('A.rgsn_dttm', 'DESC')
+      .limit(limit)
+      .getRawMany();
 
-    return this.commentRepository.query(query, [rgsrId, limit]);
+    return result;
   }
 }

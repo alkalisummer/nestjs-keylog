@@ -8,8 +8,8 @@ import { LikeQueryDto } from './dto/like-query.dto';
 import { timeToString } from '../../shared/utils';
 
 export interface LikeCountResult {
-  USER_ID: string;
-  LIKE_CNT: number;
+  userId: string;
+  likeCnt: number;
 }
 
 export interface LikeCreateResult {
@@ -30,7 +30,7 @@ export class LikeRepository {
 
     const result: LikeCountResult[] = await this.likeRepository
       .createQueryBuilder('like')
-      .select(['like.user_id AS USER_ID', 'COUNT(*) OVER (PARTITION BY like.post_id) AS LIKE_CNT'])
+      .select(['like.user_id AS userId', 'COUNT(*) OVER (PARTITION BY like.post_id) AS likeCnt'])
       .where('like.post_id = :postId', { postId })
       .getRawMany();
 

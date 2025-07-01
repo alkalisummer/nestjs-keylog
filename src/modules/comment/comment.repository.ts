@@ -9,24 +9,24 @@ import { CommentListQueryDto } from './dto/comment-list-query.dto';
 import { timeToString } from '../../shared/utils';
 
 export interface CommentListItem {
-  COMMENT_ID: number;
-  COMMENT_DEPTH: number;
-  COMMENT_ORIGIN_ID: number;
-  COMMENT_CNTN: string;
-  RGSR_ID: string;
-  RGSN_DTTM: string;
-  USER_NICKNAME: string;
-  USER_THMB_IMG_URL: string;
-  REPLY_CNT: number;
+  commentId: number;
+  commentDepth: number;
+  commentOriginId: number;
+  commentCntn: string;
+  rgsrId: string;
+  rgsnDttm: string;
+  userNickname: string;
+  userThmbImgUrl: string;
+  replyCnt: number;
 }
 
 export interface RecentComment {
-  COMMENT_ID: number;
-  COMMENT_CNTN: string;
-  RGSN_DTTM: string;
-  POST_ID: number;
-  RGSR_ID: string;
-  USER_NICKNAME: string;
+  commentId: number;
+  commentCntn: string;
+  rgsnDttm: string;
+  postId: number;
+  rgsrId: string;
+  userNickname: string;
 }
 
 export interface CommentResponse {
@@ -49,15 +49,15 @@ export class CommentRepository {
     const result: CommentListItem[] = await this.commentRepository
       .createQueryBuilder('A')
       .select([
-        'A.comment_id AS COMMENT_ID',
-        'A.comment_depth AS COMMENT_DEPTH',
-        'A.comment_origin_id AS COMMENT_ORIGIN_ID',
-        'A.comment_cntn AS COMMENT_CNTN',
-        'A.rgsr_id AS RGSR_ID',
-        'A.rgsn_dttm AS RGSN_DTTM',
-        'B.user_nickname AS USER_NICKNAME',
-        'B.user_thmb_img_url AS USER_THMB_IMG_URL',
-        'COUNT(C.comment_id) AS REPLY_CNT',
+        'A.comment_id AS commentId',
+        'A.comment_depth AS commentDepth',
+        'A.comment_origin_id AS commentOriginId',
+        'A.comment_cntn AS commentCntn',
+        'A.rgsr_id AS rgsrId',
+        'A.rgsn_dttm AS rgsnDttm',
+        'B.user_nickname AS userNickname',
+        'B.user_thmb_img_url AS userThmbImgUrl',
+        'COUNT(C.comment_id) AS replyCnt',
       ])
       .leftJoin('USER', 'B', 'A.rgsr_id = B.user_id')
       .leftJoin('COMMENT', 'C', 'A.comment_id = C.comment_origin_id AND C.comment_depth = 2')
@@ -125,12 +125,12 @@ export class CommentRepository {
     const result: RecentComment[] = await this.commentRepository
       .createQueryBuilder('A')
       .select([
-        'A.comment_id AS COMMENT_ID',
-        'A.comment_cntn AS COMMENT_CNTN',
-        'A.rgsn_dttm AS RGSN_DTTM',
-        'A.post_id AS POST_ID',
-        'A.rgsr_id AS RGSR_ID',
-        'C.user_nickname AS USER_NICKNAME',
+        'A.comment_id AS commentId',
+        'A.comment_cntn AS commentCntn',
+        'A.rgsn_dttm AS rgsnDttm',
+        'A.post_id AS postId',
+        'A.rgsr_id AS rgsrId',
+        'C.user_nickname AS userNickname',
       ])
       .leftJoin('POST', 'B', 'A.post_id = B.post_id')
       .leftJoin('USER', 'C', 'A.rgsr_id = C.user_id')

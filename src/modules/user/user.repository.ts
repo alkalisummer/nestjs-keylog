@@ -11,24 +11,24 @@ import { CreateUserTokenDto, DeleteUserTokenDto } from './dto/user-token.dto';
 import { hashPassword, timeToString } from '../../shared/utils';
 
 export interface UserInfo {
-  USER_ID: string;
-  USER_EMAIL: string;
-  USER_NICKNAME: string;
-  USER_PASSWORD: string;
-  USER_THMB_IMG_URL: string;
-  USER_BLOG_NAME: string;
+  userId: string;
+  userEmail: string;
+  userNickname: string;
+  userPassword: string;
+  userThmbImgUrl: string;
+  userBlogName: string;
 }
 
 export interface TokenInfo {
-  TOKEN: string;
-  USER_ID: string;
-  EXPIRE_TIME: string;
+  token: string;
+  userId: string;
+  expireTime: string;
 }
 
 export interface VerifyCodeInfo {
-  VERIFY_CODE_ID: number;
-  VERIFY_CODE: string;
-  EXPIRATION_TIME: string;
+  verifyCodeId: number;
+  verifyCode: string;
+  expirationTime: string;
 }
 
 @Injectable()
@@ -46,12 +46,12 @@ export class UserRepository {
     let query = this.userRepository
       .createQueryBuilder('user')
       .select([
-        'user.user_id AS USER_ID',
-        'user.user_email AS USER_EMAIL',
-        'user.user_nickname AS USER_NICKNAME',
-        'user.user_password AS USER_PASSWORD',
-        'user.user_thmb_img_url AS USER_THMB_IMG_URL',
-        'user.user_blog_name AS USER_BLOG_NAME',
+        'user.user_id AS userId',
+        'user.user_email AS userEmail',
+        'user.user_nickname AS userNickname',
+        'user.user_password AS userPassword',
+        'user.user_thmb_img_url AS userThmbImgUrl',
+        'user.user_blog_name AS userBlogName',
       ])
       .where('user.user_id = :userId', { userId });
 
@@ -116,13 +116,13 @@ export class UserRepository {
   }
 
   async getCurrentPassword(userId: string): Promise<string | undefined> {
-    const result: { USER_PASSWORD?: string } | undefined = await this.userRepository
+    const result: { userPassword?: string } | undefined = await this.userRepository
       .createQueryBuilder('user')
-      .select('user.user_password AS USER_PASSWORD')
+      .select('user.user_password AS userPassword')
       .where('user.user_id = :userId', { userId })
       .getRawOne();
 
-    return result?.USER_PASSWORD;
+    return result?.userPassword;
   }
 
   async deleteUser(userId: string): Promise<void> {
@@ -145,9 +145,9 @@ export class UserRepository {
     const result: VerifyCodeInfo | undefined = await this.verifyCodeRepository
       .createQueryBuilder('verifyCode')
       .select([
-        'verifyCode.verify_code_id AS VERIFY_CODE_ID',
-        'verifyCode.verify_code AS VERIFY_CODE',
-        'verifyCode.expiration_time AS EXPIRATION_TIME',
+        'verifyCode.verify_code_id AS verifyCodeId',
+        'verifyCode.verify_code AS verifyCode',
+        'verifyCode.expiration_time AS expirationTime',
       ])
       .where('verifyCode.verify_code_id = :verifyCodeId', { verifyCodeId })
       .getRawOne();
@@ -175,7 +175,7 @@ export class UserRepository {
   async getUserToken(token: string): Promise<TokenInfo | undefined> {
     const result: TokenInfo | undefined = await this.userTokenRepository
       .createQueryBuilder('userToken')
-      .select(['userToken.token AS TOKEN', 'userToken.user_id AS USER_ID', 'userToken.expire_time AS EXPIRE_TIME'])
+      .select(['userToken.token AS token', 'userToken.user_id AS userId', 'userToken.expire_time AS expireTime'])
       .where('userToken.token = :token', { token })
       .getRawOne();
 

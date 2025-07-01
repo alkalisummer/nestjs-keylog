@@ -25,7 +25,7 @@ export class UserService {
       return null;
     }
 
-    const isPasswordValid = await comparePassword(loginUserDto.userPassword, user.USER_PASSWORD);
+    const isPasswordValid = await comparePassword(loginUserDto.userPassword, user.userPassword);
     if (!isPasswordValid) {
       return null;
     }

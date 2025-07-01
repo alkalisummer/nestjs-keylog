@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class PostListQueryDto {
   @IsOptional()
   @IsString()
-  id?: string; // rgsrId
+  authorId?: string; // rgsrId
 
   @IsOptional()
   @Type(() => Number)

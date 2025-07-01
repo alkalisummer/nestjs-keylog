@@ -8,43 +8,43 @@ import { PostListQueryDto } from './dto/post-list-query.dto';
 import { timeToString } from '../../shared/utils';
 
 export interface PostListItem {
-  PAGE_INDX: number;
-  TOTAL_ITEMS: number;
-  POST_ID: number;
-  POST_TITLE: string;
-  POST_CNTN: string;
-  POST_THMB_IMG_URL: string;
-  RGSR_ID: string;
-  RGSN_DTTM: Date;
-  USER_NICKNAME: string;
-  USER_THMB_IMG_URL: string;
-  COMMENT_CNT: number;
-  LIKE_CNT: number;
-  HASHTAG_NAME?: string;
+  pageIndx: number;
+  totalItems: number;
+  postId: number;
+  postTitle: string;
+  postCntn: string;
+  postThmbImgUrl: string;
+  rgsrId: string;
+  rgsnDttm: Date;
+  userNickname: string;
+  userThmbImgUrl: string;
+  commentCnt: number;
+  likeCnt: number;
+  hashtagName?: string;
 }
 
 export interface PostDetail {
-  POST_ID: number;
-  POST_TITLE: string;
-  POST_HTML_CNTN: string;
-  RGSR_ID: string;
-  TEMP_YN: string;
-  AMNT_DTTM: Date;
+  postId: number;
+  postTitle: string;
+  postHtmlCntn: string;
+  rgsrId: string;
+  tempYn: string;
+  amntDttm: Date;
 }
 
 export interface RecentPost {
-  POST_ID: number;
-  POST_TITLE: string;
-  POST_THMB_IMG_URL: string;
-  RGSN_DTTM: Date;
+  postId: number;
+  postTitle: string;
+  postThmbImgUrl: string;
+  rgsnDttm: Date;
 }
 
 export interface PopularPost {
-  POST_ID: number;
-  POST_TITLE: string;
-  POST_THMB_IMG_URL: string;
-  RGSN_DTTM: Date;
-  LIKE_CNT: number;
+  postId: number;
+  postTitle: string;
+  postThmbImgUrl: string;
+  rgsnDttm: Date;
+  likeCnt: number;
 }
 
 @Injectable()
@@ -55,24 +55,24 @@ export class PostRepository {
   ) {}
 
   async getPostList(params: PostListQueryDto): Promise<PostListItem[]> {
-    const { id: rgsrId, perPage = 10, currPageNum = 1, searchWord, tempYn, tagId } = params;
+    const { authorId: rgsrId, perPage = 10, currPageNum = 1, searchWord, tempYn, tagId } = params;
     const sttRowNum = perPage * (currPageNum - 1) + 1;
 
     let query = this.postRepository
       .createQueryBuilder('A')
       .select([
-        'ROW_NUMBER() OVER(ORDER BY A.rgsn_dttm DESC) AS PAGE_INDX',
-        'COUNT(*) OVER() AS TOTAL_ITEMS',
-        'A.post_id AS POST_ID',
-        'A.post_title AS POST_TITLE',
-        'A.post_cntn AS POST_CNTN',
-        'A.post_thmb_img_url AS POST_THMB_IMG_URL',
-        'A.rgsr_id AS RGSR_ID',
-        'A.rgsn_dttm AS RGSN_DTTM',
-        'B.user_nickname AS USER_NICKNAME',
-        'B.user_thmb_img_url AS USER_THMB_IMG_URL',
-        'COUNT(DISTINCT C.comment_id) AS COMMENT_CNT',
-        'COUNT(DISTINCT D.likeact_id) AS LIKE_CNT',
+        'ROW_NUMBER() OVER(ORDER BY A.rgsn_dttm DESC) AS pageIndx',
+        'COUNT(*) OVER() AS totalItems',
+        'A.post_id AS postId',
+        'A.post_title AS postTitle',
+        'A.post_cntn AS postCntn',
+        'A.post_thmb_img_url AS postThmbImgUrl',
+        'A.rgsr_id AS rgsrId',
+        'A.rgsn_dttm AS rgsnDttm',
+        'B.user_nickname AS userNickname',
+        'B.user_thmb_img_url AS userThmbImgUrl',
+        'COUNT(DISTINCT C.comment_id) AS commentCnt',
+        'COUNT(DISTINCT D.likeact_id) AS likeCnt',
       ])
       .leftJoin('USER', 'B', 'A.rgsr_id = B.user_id')
       .leftJoin('COMMENT', 'C', 'A.post_id = C.post_id')
@@ -85,7 +85,7 @@ export class PostRepository {
       .groupBy('A.post_id');
 
     if (tagId) {
-      query = query.addSelect('F.hashtag_name AS HASHTAG_NAME');
+      query = query.addSelect('F.hashtag_name AS hashtagName');
       query = query.andWhere('E.hashtag_id = :tagId', { tagId });
     }
 
@@ -107,7 +107,7 @@ export class PostRepository {
     const baseQuery = query.getQuery().replace(/:(\w+)/g, '?');
     const parameters: any[] = Object.values(query.getParameters());
 
-    const subQuery = `SELECT * FROM (${baseQuery}) AS A WHERE PAGE_INDX >= ${sttRowNum} AND PAGE_INDX <= ${sttRowNum + perPage - 1} ORDER BY PAGE_INDX`;
+    const subQuery = `SELECT * FROM (${baseQuery}) AS A WHERE pageIndx >= ${sttRowNum} AND pageIndx <= ${sttRowNum + perPage - 1} ORDER BY pageIndx`;
 
     const result: PostListItem[] = await this.postRepository.query(subQuery, parameters);
     return result;
@@ -117,12 +117,12 @@ export class PostRepository {
     const result: PostDetail | undefined = await this.postRepository
       .createQueryBuilder('post')
       .select([
-        'post.post_id AS POST_ID',
-        'post.post_title AS POST_TITLE',
-        'post.post_html_cntn AS POST_HTML_CNTN',
-        'post.rgsr_id AS RGSR_ID',
-        'post.temp_yn AS TEMP_YN',
-        'post.amnt_dttm AS AMNT_DTTM',
+        'post.post_id AS postId',
+        'post.post_title AS postTitle',
+        'post.post_html_cntn AS postHtmlCntn',
+        'post.rgsr_id AS rgsrId',
+        'post.temp_yn AS tempYn',
+        'post.amnt_dttm AS amntDttm',
       ])
       .where('post.post_id = :postId', { postId })
       .getRawOne();
@@ -176,10 +176,10 @@ export class PostRepository {
     const result: RecentPost[] = await this.postRepository
       .createQueryBuilder('post')
       .select([
-        'post.post_id AS POST_ID',
-        'post.post_title AS POST_TITLE',
-        'post.post_thmb_img_url AS POST_THMB_IMG_URL',
-        'post.rgsn_dttm AS RGSN_DTTM',
+        'post.post_id AS postId',
+        'post.post_title AS postTitle',
+        'post.post_thmb_img_url AS postThmbImgUrl',
+        'post.rgsn_dttm AS rgsnDttm',
       ])
       .where('post.rgsr_id = :rgsrId', { rgsrId })
       .andWhere('post.temp_yn = :tempYn', { tempYn: 'N' })
@@ -194,18 +194,18 @@ export class PostRepository {
     const subQuery = this.postRepository
       .createQueryBuilder('A')
       .select([
-        'A.post_id AS POST_ID',
-        'A.post_title AS POST_TITLE',
-        'A.post_thmb_img_url AS POST_THMB_IMG_URL',
-        'A.rgsn_dttm AS RGSN_DTTM',
-        'COUNT(B.likeact_id) AS LIKE_CNT',
+        'A.post_id AS postId',
+        'A.post_title AS postTitle',
+        'A.post_thmb_img_url AS postThmbImgUrl',
+        'A.rgsn_dttm AS rgsnDttm',
+        'COUNT(B.likeact_id) AS likeCnt',
       ])
       .leftJoin('LIKEACT', 'B', 'A.post_id = B.post_id')
       .where('A.rgsr_id = :rgsrId', { rgsrId })
       .andWhere('A.temp_yn = :tempYn', { tempYn: 'N' })
       .groupBy('A.post_id');
 
-    const query = `SELECT * FROM (${subQuery.getQuery()}) AS A WHERE A.LIKE_CNT > 0 ORDER BY A.LIKE_CNT DESC, A.RGSN_DTTM DESC LIMIT ${limit}`;
+    const query = `SELECT * FROM (${subQuery.getQuery()}) AS A WHERE A.likeCnt > 0 ORDER BY A.likeCnt DESC, A.rgsnDttm DESC LIMIT ${limit}`;
 
     const parameters: any[] = [rgsrId, 'N'];
     const result: unknown = await this.postRepository.query(query, parameters);
@@ -220,15 +220,16 @@ export class PostRepository {
     const result: PostDetail | undefined = await this.postRepository
       .createQueryBuilder('post')
       .select([
-        'post.post_id AS POST_ID',
-        'post.post_title AS POST_TITLE',
-        'post.post_html_cntn AS POST_HTML_CNTN',
-        'post.temp_yn AS TEMP_YN',
-        'post.rgsn_dttm AS RGSN_DTTM',
+        'post.post_id AS postId',
+        'post.post_title AS postTitle',
+        'post.post_html_cntn AS postHtmlCntn',
+        'post.rgsr_id AS rgsrId',
+        'post.temp_yn AS tempYn',
+        'post.amnt_dttm AS amntDttm',
       ])
       .where('post.post_origin_id = :postId', { postId })
+      .andWhere('post.temp_yn = :tempYn', { tempYn: 'Y' })
       .orderBy('post.rgsn_dttm', 'DESC')
-      .limit(1)
       .getRawOne();
 
     return result;

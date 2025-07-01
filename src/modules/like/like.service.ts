@@ -19,7 +19,7 @@ export class LikeService {
     const items = await this.likeRepository.getLikeCount(query);
 
     return {
-      totalItems: items.length > 0 ? items[0].LIKE_CNT : 0,
+      totalItems: items.length > 0 ? items[0].likeCnt : 0,
       items,
     };
   }
@@ -40,7 +40,7 @@ export class LikeService {
     });
 
     return {
-      totalItems: refreshCnt.length > 0 ? refreshCnt[0].LIKE_CNT : 0,
+      totalItems: refreshCnt.length > 0 ? refreshCnt[0].likeCnt : 0,
       items: [],
       likeactId: createdLike.likeactId,
       refreshCnt,
@@ -63,7 +63,7 @@ export class LikeService {
     });
 
     return {
-      totalItems: refreshCnt.length > 0 ? refreshCnt[0].LIKE_CNT : 0,
+      totalItems: refreshCnt.length > 0 ? refreshCnt[0].likeCnt : 0,
       items: [],
       refreshCnt,
     };

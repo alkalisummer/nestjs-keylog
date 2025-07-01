@@ -5,16 +5,16 @@ import { Hashtag } from './entities/hashtag.entity';
 import { CreateHashtagDto } from './dto/create-hashtag.dto';
 
 export interface HashtagWithPost {
-  POST_ID: number;
-  HASHTAG_ID: number;
-  HASHTAG_NAME: string;
-  RGSN_DTTM: Date;
+  postId: number;
+  hashtagId: number;
+  hashtagName: string;
+  rgsnDttm: Date;
 }
 
 export interface HashtagCount {
-  HASHTAG_ID: number;
-  HASHTAG_NAME: string;
-  HASHTAG_CNT: number;
+  hashtagId: number;
+  hashtagName: string;
+  hashtagCnt: number;
 }
 
 @Injectable()
@@ -31,10 +31,10 @@ export class HashtagRepository {
     let query = this.hashtagRepository
       .createQueryBuilder('B')
       .select([
-        'A.post_id AS POST_ID',
-        'A.hashtag_id AS HASHTAG_ID',
-        'B.hashtag_name AS HASHTAG_NAME',
-        'C.rgsn_dttm AS RGSN_DTTM',
+        'A.post_id AS postId',
+        'A.hashtag_id AS hashtagId',
+        'B.hashtag_name AS hashtagName',
+        'C.rgsn_dttm AS rgsnDttm',
       ])
       .leftJoin('POST_TAG', 'A', 'A.hashtag_id = B.hashtag_id')
       .leftJoin('POST', 'C', 'A.post_id = C.post_id')
@@ -59,7 +59,7 @@ export class HashtagRepository {
   async getHashtagCounts(userId: string): Promise<HashtagCount[]> {
     const result: HashtagCount[] = await this.hashtagRepository
       .createQueryBuilder('B')
-      .select(['A.hashtag_id AS HASHTAG_ID', 'B.hashtag_name AS HASHTAG_NAME', 'COUNT(*) AS HASHTAG_CNT'])
+      .select(['A.hashtag_id AS hashtagId', 'B.hashtag_name AS hashtagName', 'COUNT(*) AS hashtagCnt'])
       .leftJoin('POST_TAG', 'A', 'A.hashtag_id = B.hashtag_id')
       .leftJoin('POST', 'C', 'A.post_id = C.post_id')
       .where('C.rgsr_id = :userId', { userId })

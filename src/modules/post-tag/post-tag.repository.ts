@@ -6,16 +6,16 @@ import { CreatePostTagDto } from './dto/create-post-tag.dto';
 import { DeletePostTagDto } from './dto/delete-post-tag.dto';
 
 export interface PostTagWithDetails {
-  POST_ID: number;
-  HASHTAG_ID: number;
-  HASHTAG_NAME: string;
-  POST_TITLE: string;
-  RGSN_DTTM: Date;
+  postId: number;
+  hashtagId: number;
+  hashtagName: string;
+  postTitle: string;
+  rgsnDttm: Date;
 }
 
 export interface PostTagCount {
-  POST_ID: number;
-  HASHTAG_COUNT: number;
+  postId: number;
+  hashtagCount: number;
 }
 
 @Injectable()
@@ -48,11 +48,11 @@ export class PostTagRepository {
     const result: PostTagWithDetails[] = await this.postTagRepository
       .createQueryBuilder('pt')
       .select([
-        'pt.post_id AS POST_ID',
-        'pt.hashtag_id AS HASHTAG_ID',
-        'h.hashtag_name AS HASHTAG_NAME',
-        'p.post_title AS POST_TITLE',
-        'p.rgsn_dttm AS RGSN_DTTM',
+        'pt.post_id AS postId',
+        'pt.hashtag_id AS hashtagId',
+        'h.hashtag_name AS hashtagName',
+        'p.post_title AS postTitle',
+        'p.rgsn_dttm AS rgsnDttm',
       ])
       .leftJoin('HASHTAG', 'h', 'pt.hashtag_id = h.hashtag_id')
       .leftJoin('POST', 'p', 'pt.post_id = p.post_id')
@@ -67,11 +67,11 @@ export class PostTagRepository {
     const result: PostTagWithDetails[] = await this.postTagRepository
       .createQueryBuilder('pt')
       .select([
-        'pt.post_id AS POST_ID',
-        'pt.hashtag_id AS HASHTAG_ID',
-        'h.hashtag_name AS HASHTAG_NAME',
-        'p.post_title AS POST_TITLE',
-        'p.rgsn_dttm AS RGSN_DTTM',
+        'pt.post_id AS postId',
+        'pt.hashtag_id AS hashtagId',
+        'h.hashtag_name AS hashtagName',
+        'p.post_title AS postTitle',
+        'p.rgsn_dttm AS rgsnDttm',
       ])
       .leftJoin('HASHTAG', 'h', 'pt.hashtag_id = h.hashtag_id')
       .leftJoin('POST', 'p', 'pt.post_id = p.post_id')
@@ -88,11 +88,11 @@ export class PostTagRepository {
     const result: PostTagWithDetails[] = await this.postTagRepository
       .createQueryBuilder('pt')
       .select([
-        'pt.post_id AS POST_ID',
-        'pt.hashtag_id AS HASHTAG_ID',
-        'h.hashtag_name AS HASHTAG_NAME',
-        'p.post_title AS POST_TITLE',
-        'p.rgsn_dttm AS RGSN_DTTM',
+        'pt.post_id AS postId',
+        'pt.hashtag_id AS hashtagId',
+        'h.hashtag_name AS hashtagName',
+        'p.post_title AS postTitle',
+        'p.rgsn_dttm AS rgsnDttm',
       ])
       .leftJoin('HASHTAG', 'h', 'pt.hashtag_id = h.hashtag_id')
       .leftJoin('POST', 'p', 'pt.post_id = p.post_id')
@@ -108,7 +108,7 @@ export class PostTagRepository {
   async getHashtagCountByPost(): Promise<PostTagCount[]> {
     const result: PostTagCount[] = await this.postTagRepository
       .createQueryBuilder('pt')
-      .select(['pt.post_id AS POST_ID', 'COUNT(pt.hashtag_id) AS HASHTAG_COUNT'])
+      .select(['pt.post_id AS postId', 'COUNT(pt.hashtag_id) AS hashtagCount'])
       .groupBy('pt.post_id')
       .getRawMany();
 

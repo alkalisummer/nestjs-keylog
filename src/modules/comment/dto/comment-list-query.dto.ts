@@ -8,5 +8,5 @@ export class CommentListQueryDto {
 
   @IsOptional()
   @IsString()
-  rgsrId?: string;
+  authorId?: string;
 }

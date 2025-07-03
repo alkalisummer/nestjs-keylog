@@ -37,26 +37,26 @@ export class PostController {
     return { message: 'Post deleted successfully' };
   }
 
-  @Delete('user/:rgsrId')
-  async deletePostsByUserId(@Param('rgsrId') rgsrId: string) {
-    await this.postService.deletePostsByUserId(rgsrId);
+  @Delete('user/:authorId')
+  async deletePostsByUserId(@Param('authorId') authorId: string) {
+    await this.postService.deletePostsByUserId(authorId);
     return { message: 'All posts deleted for user' };
   }
 
-  @Get('recent/:rgsrId')
+  @Get('recent/:authorId')
   async getRecentPosts(
-    @Param('rgsrId') rgsrId: string,
+    @Param('authorId') authorId: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
-    return this.postService.getRecentPosts(rgsrId, limit);
+    return this.postService.getRecentPosts(authorId, limit);
   }
 
-  @Get('popular/:rgsrId')
+  @Get('popular/:authorId')
   async getPopularPosts(
-    @Param('rgsrId') rgsrId: string,
+    @Param('authorId') authorId: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
-    return this.postService.getPopularPosts(rgsrId, limit);
+    return this.postService.getPopularPosts(authorId, limit);
   }
 
   @Delete('temp/:postOriginId')

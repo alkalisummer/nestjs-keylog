@@ -27,7 +27,7 @@ export interface PostDetail {
   postId: number;
   postTitle: string;
   postHtmlCntn: string;
-  rgsrId: string;
+  authorId: string;
   tempYn: string;
   amntDttm: Date;
 }
@@ -55,7 +55,7 @@ export class PostRepository {
   ) {}
 
   async getPostList(params: PostListQueryDto): Promise<PostListItem[]> {
-    const { authorId: rgsrId, perPage = 10, currPageNum = 1, searchWord, tempYn, tagId } = params;
+    const { authorId, perPage = 10, currPageNum = 1, searchWord, tempYn, tagId } = params;
     const sttRowNum = perPage * (currPageNum - 1) + 1;
 
     let query = this.postRepository
@@ -89,8 +89,8 @@ export class PostRepository {
       query = query.andWhere('E.hashtag_id = :tagId', { tagId });
     }
 
-    if (rgsrId) {
-      query = query.andWhere('A.rgsr_id = :rgsrId', { rgsrId });
+    if (authorId) {
+      query = query.andWhere('A.rgsr_id = :authorId', { authorId });
     }
 
     if (searchWord) {
@@ -120,7 +120,7 @@ export class PostRepository {
         'post.post_id AS postId',
         'post.post_title AS postTitle',
         'post.post_html_cntn AS postHtmlCntn',
-        'post.rgsr_id AS rgsrId',
+        'post.rgsr_id AS authorId',
         'post.temp_yn AS tempYn',
         'post.amnt_dttm AS amntDttm',
       ])
@@ -136,7 +136,7 @@ export class PostRepository {
       postCntn: createPostDto.postCntn,
       postHtmlCntn: Buffer.from(createPostDto.postHtmlCntn, 'utf8'),
       postThmbImgUrl: createPostDto.postThmbImgUrl,
-      rgsrId: createPostDto.rgsrId,
+      authorId: createPostDto.authorId,
       tempYn: createPostDto.tempYn,
       postOriginId: createPostDto.postOriginId,
       rgsnDttm: timeToString(new Date()),
@@ -168,11 +168,11 @@ export class PostRepository {
     await this.postRepository.delete(postId);
   }
 
-  async deletePostsByUserId(rgsrId: string): Promise<void> {
-    await this.postRepository.delete({ rgsrId });
+  async deletePostsByUserId(authorId: string): Promise<void> {
+    await this.postRepository.delete({ authorId });
   }
 
-  async getRecentPosts(rgsrId: string, limit: number = 3): Promise<RecentPost[]> {
+  async getRecentPosts(authorId: string, limit: number = 3): Promise<RecentPost[]> {
     const result: RecentPost[] = await this.postRepository
       .createQueryBuilder('post')
       .select([
@@ -181,7 +181,7 @@ export class PostRepository {
         'post.post_thmb_img_url AS postThmbImgUrl',
         'post.rgsn_dttm AS rgsnDttm',
       ])
-      .where('post.rgsr_id = :rgsrId', { rgsrId })
+      .where('post.rgsr_id = :authorId', { authorId })
       .andWhere('post.temp_yn = :tempYn', { tempYn: 'N' })
       .orderBy('post.rgsn_dttm', 'DESC')
       .limit(limit)
@@ -190,7 +190,7 @@ export class PostRepository {
     return result;
   }
 
-  async getPopularPosts(rgsrId: string, limit: number = 3): Promise<PopularPost[]> {
+  async getPopularPosts(authorId: string, limit: number = 3): Promise<PopularPost[]> {
     const subQuery = this.postRepository
       .createQueryBuilder('A')
       .select([
@@ -201,13 +201,13 @@ export class PostRepository {
         'COUNT(B.likeact_id) AS likeCnt',
       ])
       .leftJoin('LIKEACT', 'B', 'A.post_id = B.post_id')
-      .where('A.rgsr_id = :rgsrId', { rgsrId })
+      .where('A.rgsr_id = :authorId', { authorId })
       .andWhere('A.temp_yn = :tempYn', { tempYn: 'N' })
       .groupBy('A.post_id');
 
     const query = `SELECT * FROM (${subQuery.getQuery()}) AS A WHERE A.likeCnt > 0 ORDER BY A.likeCnt DESC, A.rgsnDttm DESC LIMIT ${limit}`;
 
-    const parameters: any[] = [rgsrId, 'N'];
+    const parameters: any[] = [authorId, 'N'];
     const result: unknown = await this.postRepository.query(query, parameters);
     return result as PopularPost[];
   }
@@ -223,7 +223,7 @@ export class PostRepository {
         'post.post_id AS postId',
         'post.post_title AS postTitle',
         'post.post_html_cntn AS postHtmlCntn',
-        'post.rgsr_id AS rgsrId',
+        'post.rgsr_id AS authorId',
         'post.temp_yn AS tempYn',
         'post.amnt_dttm AS amntDttm',
       ])

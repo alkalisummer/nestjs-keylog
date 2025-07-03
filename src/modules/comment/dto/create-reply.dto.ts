@@ -11,5 +11,5 @@ export class CreateReplyDto {
   commentCntn: string;
 
   @IsString()
-  rgsrId: string;
+  authorId: string;
 }

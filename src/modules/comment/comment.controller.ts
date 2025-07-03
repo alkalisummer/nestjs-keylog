@@ -39,11 +39,11 @@ export class CommentController {
     return this.commentService.deleteComment(commentId, postId);
   }
 
-  @Get('recent/:rgsrId')
+  @Get('recent/:authorId')
   async getRecentComments(
-    @Param('rgsrId') rgsrId: string,
+    @Param('authorId') authorId: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
-    return this.commentService.getRecentComments(rgsrId, limit);
+    return this.commentService.getRecentComments(authorId, limit);
   }
 }

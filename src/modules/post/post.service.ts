@@ -29,16 +29,16 @@ export class PostService {
     await this.postRepository.deletePost(postId);
   }
 
-  async deletePostsByUserId(rgsrId: string): Promise<void> {
-    await this.postRepository.deletePostsByUserId(rgsrId);
+  async deletePostsByUserId(authorId: string): Promise<void> {
+    await this.postRepository.deletePostsByUserId(authorId);
   }
 
-  async getRecentPosts(rgsrId: string, limit?: number): Promise<RecentPost[]> {
-    return this.postRepository.getRecentPosts(rgsrId, limit);
+  async getRecentPosts(authorId: string, limit?: number): Promise<RecentPost[]> {
+    return this.postRepository.getRecentPosts(authorId, limit);
   }
 
-  async getPopularPosts(rgsrId: string, limit?: number): Promise<PopularPost[]> {
-    return this.postRepository.getPopularPosts(rgsrId, limit);
+  async getPopularPosts(authorId: string, limit?: number): Promise<PopularPost[]> {
+    return this.postRepository.getPopularPosts(authorId, limit);
   }
 
   async deleteTempPost(postOriginId: number): Promise<void> {

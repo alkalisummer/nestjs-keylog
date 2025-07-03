@@ -24,7 +24,7 @@ export class Post {
   postThmbImgUrl?: string;
 
   @Column({ name: 'rgsr_id', type: 'varchar', length: 50 })
-  rgsrId: string;
+  authorId: string;
 
   @Column({ name: 'temp_yn', type: 'char', length: 1, default: 'N' })
   tempYn: string;

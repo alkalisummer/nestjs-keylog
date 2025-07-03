@@ -18,7 +18,7 @@ export class Comment {
   commentCntn: string;
 
   @Column({ name: 'rgsr_id', type: 'varchar', length: 50 })
-  rgsrId: string;
+  authorId: string;
 
   @Column({ name: 'rgsn_dttm', type: 'varchar', length: 14 })
   rgsnDttm: string;

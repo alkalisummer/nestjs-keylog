@@ -76,7 +76,7 @@ export class CommentService {
     };
   }
 
-  async getRecentComments(rgsrId: string, limit?: number): Promise<RecentComment[]> {
-    return this.commentRepository.getRecentComments(rgsrId, limit);
+  async getRecentComments(authorId: string, limit?: number): Promise<RecentComment[]> {
+    return this.commentRepository.getRecentComments(authorId, limit);
   }
 }

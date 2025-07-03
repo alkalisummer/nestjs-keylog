@@ -8,5 +8,5 @@ export class CreateCommentDto {
   commentCntn: string;
 
   @IsString()
-  rgsrId: string;
+  authorId: string;
 }

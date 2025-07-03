@@ -15,7 +15,7 @@ export class CreatePostDto {
   postThmbImgUrl?: string;
 
   @IsString()
-  rgsrId: string;
+  authorId: string;
 
   @IsString()
   @IsIn(['Y', 'N'])

@@ -13,7 +13,7 @@ export interface CommentListItem {
   commentDepth: number;
   commentOriginId: number;
   commentCntn: string;
-  rgsrId: string;
+  authorId: string;
   rgsnDttm: string;
   userNickname: string;
   userThmbImgUrl: string;
@@ -25,7 +25,7 @@ export interface RecentComment {
   commentCntn: string;
   rgsnDttm: string;
   postId: number;
-  rgsrId: string;
+  authorId: string;
   userNickname: string;
 }
 
@@ -53,7 +53,7 @@ export class CommentRepository {
         'A.comment_depth AS commentDepth',
         'A.comment_origin_id AS commentOriginId',
         'A.comment_cntn AS commentCntn',
-        'A.rgsr_id AS rgsrId',
+        'A.rgsr_id AS authorId',
         'A.rgsn_dttm AS rgsnDttm',
         'B.user_nickname AS userNickname',
         'B.user_thmb_img_url AS userThmbImgUrl',
@@ -77,7 +77,7 @@ export class CommentRepository {
       postId: createCommentDto.postId,
       commentDepth: 1,
       commentCntn: createCommentDto.commentCntn,
-      rgsrId: createCommentDto.rgsrId,
+      authorId: createCommentDto.authorId,
       rgsnDttm: currentTime,
       amntDttm: currentTime,
     });
@@ -93,7 +93,7 @@ export class CommentRepository {
       commentOriginId: createReplyDto.commentOriginId,
       commentDepth: 2,
       commentCntn: createReplyDto.commentCntn,
-      rgsrId: createReplyDto.rgsrId,
+      authorId: createReplyDto.authorId,
       rgsnDttm: currentTime,
       amntDttm: currentTime,
     });
@@ -121,7 +121,7 @@ export class CommentRepository {
       .execute();
   }
 
-  async getRecentComments(rgsrId: string, limit: number = 3): Promise<RecentComment[]> {
+  async getRecentComments(authorId: string, limit: number = 3): Promise<RecentComment[]> {
     const result: RecentComment[] = await this.commentRepository
       .createQueryBuilder('A')
       .select([
@@ -129,12 +129,12 @@ export class CommentRepository {
         'A.comment_cntn AS commentCntn',
         'A.rgsn_dttm AS rgsnDttm',
         'A.post_id AS postId',
-        'A.rgsr_id AS rgsrId',
+        'A.rgsr_id AS authorId',
         'C.user_nickname AS userNickname',
       ])
       .leftJoin('POST', 'B', 'A.post_id = B.post_id')
       .leftJoin('USER', 'C', 'A.rgsr_id = C.user_id')
-      .where('B.rgsr_id = :rgsrId', { rgsrId })
+      .where('B.rgsr_id = :authorId', { authorId })
       .orderBy('A.rgsn_dttm', 'DESC')
       .limit(limit)
       .getRawMany();

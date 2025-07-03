@@ -5,7 +5,7 @@ import { CreateReplyDto } from './dto/create-reply.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentListQueryDto } from './dto/comment-list-query.dto';
 
-@Controller('comments')
+@Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 

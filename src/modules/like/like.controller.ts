@@ -4,7 +4,7 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { DeleteLikeDto } from './dto/delete-like.dto';
 import { LikeQueryDto } from './dto/like-query.dto';
 
-@Controller('likes')
+@Controller('like')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 

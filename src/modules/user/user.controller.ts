@@ -19,7 +19,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { CreateVerifyCodeDto } from './dto/verify-code.dto';
 import { CreateUserTokenDto, DeleteUserTokenDto } from './dto/user-token.dto';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

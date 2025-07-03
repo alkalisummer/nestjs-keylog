@@ -14,7 +14,7 @@ export interface PostListItem {
   postTitle: string;
   postCntn: string;
   postThmbImgUrl: string;
-  rgsrId: string;
+  authorId: string;
   rgsnDttm: Date;
   userNickname: string;
   userThmbImgUrl: string;
@@ -67,7 +67,7 @@ export class PostRepository {
         'A.post_title AS postTitle',
         'A.post_cntn AS postCntn',
         'A.post_thmb_img_url AS postThmbImgUrl',
-        'A.rgsr_id AS rgsrId',
+        'A.rgsr_id AS authorId',
         'A.rgsn_dttm AS rgsnDttm',
         'B.user_nickname AS userNickname',
         'B.user_thmb_img_url AS userThmbImgUrl',

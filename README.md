@@ -1,12 +1,19 @@
-# Nest.js Backend Server for Keylog
+# NestJS Keylog Backend
 
 ## 🚀 개요
 
-NestJS와 TypeORM을 사용한 블로그 플랫폼의 백엔드 서버입니다. 레이어드 아키텍처를 적용하여 모듈화된 구조로 설계되었습니다.
+NestJS와 TypeORM을 사용한 Keyolog 백엔드 서버입니다. 모듈화된 아키텍처를 적용하여 확장 가능하고 유지보수가 용이한 구조로 설계되었습니다.
 
 ## 📋 주요 기능
 
-### Post 모듈
+### 🔐 User 모듈
+
+- 사용자 회원가입 및 로그인
+- JWT 토큰 기반 인증
+- 사용자 정보 관리
+- 이메일 인증 코드 시스템
+
+### 📝 Post 모듈
 
 - 게시글 CRUD 작업
 - 페이지네이션을 지원하는 게시글 목록 조회
@@ -14,149 +21,120 @@ NestJS와 TypeORM을 사용한 블로그 플랫폼의 백엔드 서버입니다.
 - 임시 저장 게시글 관리
 - 최근 게시글 조회
 - 인기 게시글 조회 (좋아요 기반)
-- 해시태그 필터링
+
+### 💬 Comment 모듈
+
+- 댓글 작성, 수정, 삭제
+- 대댓글 시스템
+- 댓글 목록 조회 (페이지네이션)
+
+### 🏷️ Hashtag 모듈
+
+- 해시태그 생성 및 관리
+- 해시태그 검색 및 조회
+
+### 🔗 PostTag 모듈
+
+- 게시글과 해시태그 연결 관리
+- 해시태그별 게시글 필터링
+
+### ❤️ Like 모듈
+
+- 게시글 좋아요/좋아요 취소
+- 좋아요 수 집계
 
 ## 🛠 기술 스택
 
-- **Framework**: NestJS
+- **Framework**: NestJS 11.x
 - **Database**: MySQL
 - **ORM**: TypeORM
+- **Authentication**: JWT, bcrypt
 - **Validation**: class-validator, class-transformer
-- **Testing**: Jest
+- **Configuration**: @nestjs/config
 - **Language**: TypeScript
+- **Package Manager**: pnpm
 
 ## 📁 프로젝트 구조
 
 ```
 src/
-├── post/
-│   ├── entities/
-│   │   └── post.entity.ts       # Post 엔티티
-│   ├── dto/
-│   │   ├── create-post.dto.ts   # 게시글 생성 DTO
-│   │   ├── update-post.dto.ts   # 게시글 수정 DTO
-│   │   └── post-list-query.dto.ts # 목록 조회 쿼리 DTO
-│   ├── post.controller.ts       # REST API 컨트롤러
-│   ├── post.service.ts          # 비즈니스 로직
-│   ├── post.repository.ts       # 데이터 액세스 레이어
-│   ├── post.module.ts           # 모듈 설정
-│   └── post.service.spec.ts     # 단위 테스트
 ├── app.module.ts                # 루트 모듈
-└── main.ts                      # 애플리케이션 진입점
+├── main.ts                      # 애플리케이션 진입점
+├── core/                        # 핵심 모듈 (필터, 가드, 인터셉터)
+├── modules/                     # 비즈니스 모듈들
+│   ├── user/                    # 사용자 관리
+│   │   ├── entities/
+│   │   │   ├── user.entity.ts
+│   │   │   ├── user-token.entity.ts
+│   │   │   └── verify-code.entity.ts
+│   │   ├── dto/
+│   │   │   ├── create-user.dto.ts
+│   │   │   ├── login-user.dto.ts
+│   │   │   ├── update-user.dto.ts
+│   │   │   ├── user-token.dto.ts
+│   │   │   └── verify-code.dto.ts
+│   │   ├── user.controller.ts
+│   │   ├── user.service.ts
+│   │   ├── user.repository.ts
+│   │   └── user.module.ts
+│   ├── post/                    # 게시글 관리
+│   │   ├── entities/
+│   │   │   └── post.entity.ts
+│   │   ├── dto/
+│   │   │   ├── create-post.dto.ts
+│   │   │   ├── update-post.dto.ts
+│   │   │   └── post-list-query.dto.ts
+│   │   ├── post.controller.ts
+│   │   ├── post.service.ts
+│   │   ├── post.repository.ts
+│   │   └── post.module.ts
+│   ├── comment/                 # 댓글 관리
+│   │   ├── entities/
+│   │   │   └── comment.entity.ts
+│   │   ├── dto/
+│   │   │   ├── create-comment.dto.ts
+│   │   │   ├── create-reply.dto.ts
+│   │   │   ├── update-comment.dto.ts
+│   │   │   └── comment-list-query.dto.ts
+│   │   ├── comment.controller.ts
+│   │   ├── comment.service.ts
+│   │   ├── comment.repository.ts
+│   │   └── comment.module.ts
+│   ├── hashtag/                 # 해시태그 관리
+│   │   ├── entities/
+│   │   │   └── hashtag.entity.ts
+│   │   ├── dto/
+│   │   │   ├── create-hashtag.dto.ts
+│   │   │   └── hashtag-query.dto.ts
+│   │   ├── hashtag.controller.ts
+│   │   ├── hashtag.service.ts
+│   │   ├── hashtag.repository.ts
+│   │   └── hashtag.module.ts
+│   ├── post-tag/                # 게시글-태그 연결
+│   │   ├── entities/
+│   │   │   └── post-tag.entity.ts
+│   │   ├── dto/
+│   │   │   ├── create-post-tag.dto.ts
+│   │   │   ├── delete-post-tag.dto.ts
+│   │   │   └── post-tag-query.dto.ts
+│   │   ├── post-tag.controller.ts
+│   │   ├── post-tag.service.ts
+│   │   ├── post-tag.repository.ts
+│   │   └── post-tag.module.ts
+│   └── like/                    # 좋아요 관리
+│       ├── entities/
+│       │   └── like.entity.ts
+│       ├── dto/
+│       │   ├── create-like.dto.ts
+│       │   ├── delete-like.dto.ts
+│       │   └── like-query.dto.ts
+│       ├── like.controller.ts
+│       ├── like.service.ts
+│       ├── like.repository.ts
+│       └── like.module.ts
+└── shared/                      # 공유 유틸리티
+    └── utils/
+        ├── bcrypt.util.ts
+        ├── date.util.ts
+        └── index.ts
 ```
-
-## ⚙️ 설정
-
-### 1. 패키지 설치
-
-```bash
-pnpm install
-```
-
-### 2. 환경변수 설정
-
-`.env` 파일을 생성하고 다음 내용을 설정하세요:
-
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=root
-DB_PASSWORD=your_password
-DB_DATABASE=keylog
-
-# Application Configuration
-NODE_ENV=development
-PORT=3000
-```
-
-### 3. 데이터베이스 설정
-
-MySQL 데이터베이스를 생성하고 연결 정보를 환경변수에 설정하세요.
-
-## 🏃‍♂️ 실행
-
-### 개발 모드
-
-```bash
-pnpm start:dev
-```
-
-### 프로덕션 모드
-
-```bash
-pnpm build
-pnpm start:prod
-```
-
-## 🧪 테스트
-
-### 단위 테스트
-
-```bash
-pnpm test
-```
-
-### E2E 테스트
-
-```bash
-pnpm test:e2e
-```
-
-### 테스트 커버리지
-
-```bash
-pnpm test:cov
-```
-
-## 📡 API 엔드포인트
-
-### Posts
-
-- `GET /posts` - 게시글 목록 조회 (페이지네이션, 검색, 필터링)
-- `GET /posts/:id` - 특정 게시글 조회
-- `POST /posts` - 게시글 생성
-- `PUT /posts/:id` - 게시글 수정
-- `DELETE /posts/:id` - 게시글 삭제
-- `GET /posts/recent/:rgsrId` - 최근 게시글 조회
-- `GET /posts/popular/:rgsrId` - 인기 게시글 조회
-- `DELETE /posts/user/:rgsrId` - 사용자의 모든 게시글 삭제
-- `DELETE /posts/temp/:postOriginId` - 임시 게시글 삭제
-- `GET /posts/temp/last/:postId` - 마지막 임시 게시글 조회
-- `GET /posts/admin/test` - 서비스 상태 확인 (스모크 테스트)
-
-### 쿼리 파라미터 예시
-
-```
-GET /posts?perPage=10&currPageNum=1&searchWord=검색어&tempYn=N&tagId=1&id=user123
-```
-
-## 🏗 아키텍처 특징
-
-### 레이어드 아키텍처
-
-- **Controller**: HTTP 요청/응답 처리
-- **Service**: 비즈니스 로직
-- **Repository**: 데이터 액세스
-- **Entity**: 데이터 모델
-
-### 설계 원칙
-
-- 단일 책임 원칙 (SRP)
-- 의존성 주입 (DI)
-- 모듈화된 구조
-- DTO를 통한 데이터 검증
-- TypeScript 타입 안전성
-
-## 🔧 개발 가이드라인
-
-- 모든 함수와 변수에 타입 선언
-- camelCase 네이밍 컨벤션
-- 단수형 폴더명 사용 (예: post, user)
-- JSDoc을 통한 문서화
-- 단위 테스트 작성 필수
-- E2E 테스트를 통한 API 검증
-
-## 📄 라이선스
-
-이 프로젝트는 개인 프로젝트입니다.

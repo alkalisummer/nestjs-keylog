@@ -16,7 +16,7 @@ import { CreatePostTagDto } from './dto/create-post-tag.dto';
 import { DeletePostTagDto } from './dto/delete-post-tag.dto';
 import { PostTagQueryDto } from './dto/post-tag-query.dto';
 
-@Controller('post-tags')
+@Controller('postTags')
 export class PostTagController {
   constructor(private readonly postTagService: PostTagService) {}
 

@@ -57,59 +57,69 @@ export class PostRepository {
   async getPostList(params: PostListQueryDto): Promise<PostListItem[]> {
     const { authorId, perPage = 10, currPageNum = 1, searchWord, tempYn, tagId } = params;
     const sttRowNum = perPage * (currPageNum - 1) + 1;
+    const endRowNum = sttRowNum + perPage - 1;
 
-    let query = this.postRepository
-      .createQueryBuilder('A')
-      .select([
-        'ROW_NUMBER() OVER(ORDER BY A.rgsn_dttm DESC) AS pageIndx',
-        'COUNT(*) OVER() AS totalItems',
-        'A.post_id AS postId',
-        'A.post_title AS postTitle',
-        'A.post_cntn AS postCntn',
-        'A.post_thmb_img_url AS postThmbImgUrl',
-        'A.rgsr_id AS authorId',
-        'A.rgsn_dttm AS rgsnDttm',
-        'B.user_nickname AS userNickname',
-        'B.user_thmb_img_url AS userThmbImgUrl',
-        'COUNT(DISTINCT C.comment_id) AS commentCnt',
-        'COUNT(DISTINCT D.likeact_id) AS likeCnt',
-      ])
-      .leftJoin('USER', 'B', 'A.rgsr_id = B.user_id')
-      .leftJoin('COMMENT', 'C', 'A.post_id = C.post_id')
-      .leftJoin('LIKEACT', 'D', 'A.post_id = D.post_id')
-      .leftJoin('POST_TAG', 'E', 'A.post_id = E.post_id')
-      .leftJoin('HASHTAG', 'F', 'E.hashtag_id = F.hashtag_id')
-      .where('(A.post_origin_id IS NULL OR A.post_origin_id = :emptyString)', {
-        emptyString: '',
-      })
-      .groupBy('A.post_id');
+    // Build the base query with proper parameter handling
+    const whereConditions = ['(A.post_origin_id IS NULL OR A.post_origin_id = ?)'];
+    const parameters: (string | number)[] = [''];
 
     if (tagId) {
-      query = query.addSelect('F.hashtag_name AS hashtagName');
-      query = query.andWhere('E.hashtag_id = :tagId', { tagId });
+      whereConditions.push('E.hashtag_id = ?');
+      parameters.push(tagId);
     }
 
     if (authorId) {
-      query = query.andWhere('A.rgsr_id = :authorId', { authorId });
+      whereConditions.push('A.rgsr_id = ?');
+      parameters.push(authorId);
     }
 
     if (searchWord) {
-      query = query.andWhere('(A.post_title LIKE :searchWord OR A.post_cntn LIKE :searchWord)', {
-        searchWord: `%${searchWord}%`,
-      });
+      whereConditions.push('(A.post_title LIKE ? OR A.post_cntn LIKE ?)');
+      parameters.push(`%${searchWord}%`);
+      parameters.push(`%${searchWord}%`);
     }
 
     if (tempYn) {
-      query = query.andWhere('A.temp_yn = :tempYn', { tempYn });
+      whereConditions.push('A.temp_yn = ?');
+      parameters.push(tempYn);
     }
 
-    // Fix: Use raw SQL with proper parameter binding
-    const baseQuery = query.getQuery().replace(/:(\w+)/g, '?');
-    const parameters: any[] = Object.values(query.getParameters());
+    const whereClause = whereConditions.join(' AND ');
 
-    const subQuery = `SELECT * FROM (${baseQuery}) AS A WHERE pageIndx >= ${sttRowNum} AND pageIndx <= ${sttRowNum + perPage - 1} ORDER BY pageIndx`;
+    const baseQuery = `
+      SELECT 
+        ROW_NUMBER() OVER(ORDER BY A.rgsn_dttm DESC) AS pageIndx,
+        COUNT(*) OVER() AS totalItems,
+        A.post_id AS postId,
+        A.post_title AS postTitle,
+        A.post_cntn AS postCntn,
+        A.post_thmb_img_url AS postThmbImgUrl,
+        A.rgsr_id AS authorId,
+        A.rgsn_dttm AS rgsnDttm,
+        B.user_nickname AS userNickname,
+        B.user_thmb_img_url AS userThmbImgUrl,
+        COUNT(DISTINCT C.comment_id) AS commentCnt,
+        COUNT(DISTINCT D.likeact_id) AS likeCnt
+        ${tagId ? ', F.hashtag_name AS hashtagName' : ''}
+      FROM POST A
+      LEFT JOIN USER B ON A.rgsr_id = B.user_id
+      LEFT JOIN COMMENT C ON A.post_id = C.post_id
+      LEFT JOIN LIKEACT D ON A.post_id = D.post_id
+      LEFT JOIN POST_TAG E ON A.post_id = E.post_id
+      LEFT JOIN HASHTAG F ON E.hashtag_id = F.hashtag_id
+      WHERE ${whereClause}
+      GROUP BY A.post_id
+    `;
 
-    const result: PostListItem[] = await this.postRepository.query(subQuery, parameters);
+    const subQuery = `
+      SELECT * FROM (${baseQuery}) AS A 
+      WHERE pageIndx >= ? AND pageIndx <= ? 
+      ORDER BY pageIndx
+    `;
+
+    const finalParameters = [...parameters, sttRowNum, endRowNum] as (string | number)[];
+
+    const result: PostListItem[] = await this.postRepository.query(subQuery, finalParameters);
     return result;
   }
 

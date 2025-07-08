@@ -11,7 +11,7 @@ export interface HashtagWithPost {
   rgsnDttm: Date;
 }
 
-export interface HashtagCount {
+export interface HashtagInfo {
   hashtagId: number;
   hashtagName: string;
   hashtagCnt: number;
@@ -55,9 +55,9 @@ export class HashtagRepository {
     return result;
   }
 
-  // getHashtagCnt 기능 - 사용자별 해시태그 사용 횟수
-  async getHashtagCounts(userId: string): Promise<HashtagCount[]> {
-    const result: HashtagCount[] = await this.hashtagRepository
+  // getHashtags기능 - 사용자별 해시태그 정보 조회
+  async getHashtags(userId: string): Promise<HashtagInfo[]> {
+    const result: HashtagInfo[] = await this.hashtagRepository
       .createQueryBuilder('B')
       .select(['A.hashtag_id AS hashtagId', 'B.hashtag_name AS hashtagName', 'COUNT(*) AS hashtagCnt'])
       .leftJoin('POST_TAG', 'A', 'A.hashtag_id = B.hashtag_id')

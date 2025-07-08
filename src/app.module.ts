@@ -26,6 +26,16 @@ import { LikeModule } from './modules/like/like.module';
       logging: process.env.NODE_ENV === 'development',
       charset: 'utf8mb4',
       timezone: '+09:00',
+      // Connection pool settings
+      extra: {
+        connectionLimit: 10,
+        acquireTimeout: 60000,
+        timeout: 60000,
+        reconnect: true,
+      },
+      // Retry settings
+      retryAttempts: 3,
+      retryDelay: 3000,
     }),
     PostModule,
     UserModule,

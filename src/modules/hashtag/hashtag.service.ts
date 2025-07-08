@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { HashtagRepository, HashtagWithPost, HashtagCount } from './hashtag.repository';
+import { HashtagRepository, HashtagWithPost, HashtagInfo } from './hashtag.repository';
 import { CreateHashtagDto } from './dto/create-hashtag.dto';
 import { HashtagQueryDto } from './dto/hashtag-query.dto';
 import { Hashtag } from './entities/hashtag.entity';
@@ -16,9 +16,9 @@ export class HashtagService {
     });
   }
 
-  // 사용자별 해시태그 사용 횟수 조회
-  async getHashtagCounts(userId: string): Promise<HashtagCount[]> {
-    return this.hashtagRepository.getHashtagCounts(userId);
+  // 사용자별 해시태그 정보 조회
+  async getHashtags(userId: string): Promise<HashtagInfo[]> {
+    return this.hashtagRepository.getHashtags(userId);
   }
 
   // 해시태그 이름으로 조회

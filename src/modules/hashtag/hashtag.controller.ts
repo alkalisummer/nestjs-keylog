@@ -38,10 +38,10 @@ export class HashtagController {
     return this.hashtagService.searchHashtagsByName(searchTerm);
   }
 
-  // GET /hashtag/counts/:userId - 사용자별 해시태그 사용 횟수
-  @Get('counts/:userId')
-  async getHashtagCounts(@Param('userId') userId: string) {
-    return this.hashtagService.getHashtagCounts(userId);
+  // GET /hashtag/info/:userId - 사용자별 해시태그 정보 조회
+  @Get('info/:userId')
+  async getHashtags(@Param('userId') userId: string) {
+    return this.hashtagService.getHashtags(userId);
   }
 
   // GET /hashtag/check/:hashtagName - 해시태그 존재 여부 확인

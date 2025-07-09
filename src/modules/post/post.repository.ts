@@ -215,11 +215,18 @@ export class PostRepository {
       .andWhere('A.temp_yn = :tempYn', { tempYn: 'N' })
       .groupBy('A.post_id');
 
-    const query = `SELECT * FROM (${subQuery.getQuery()}) AS A WHERE A.likeCnt > 0 ORDER BY A.likeCnt DESC, A.rgsnDttm DESC LIMIT ${limit}`;
+    const [subQuerySql, subQueryParams] = subQuery.getQueryAndParameters();
 
-    const parameters: any[] = [authorId, 'N'];
-    const result: unknown = await this.postRepository.query(query, parameters);
-    return result as PopularPost[];
+    const query = `
+      SELECT * FROM (${subQuerySql}) AS B
+      WHERE B.likeCnt > 0
+      ORDER BY B.likeCnt DESC, B.rgsnDttm DESC
+      LIMIT ${limit}
+  `;
+
+    const result: PopularPost[] = await this.postRepository.query(query, subQueryParams);
+
+    return result;
   }
 
   async deleteTempPost(postOriginId: number): Promise<void> {

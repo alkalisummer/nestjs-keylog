@@ -8,10 +8,10 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start": "node --no-deprecation dist/main",
+    "start:dev": "NODE_OPTIONS='--no-deprecation' nest start --watch",
+    "start:debug": "NODE_OPTIONS='--no-deprecation' nest start --debug --watch",
+    "start:prod": "node --no-deprecation dist/main",
     "lint": "eslint \"src/**/*.ts\" --fix"
   },
   "dependencies": {

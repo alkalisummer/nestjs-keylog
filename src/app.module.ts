@@ -30,8 +30,8 @@ import { LikeModule } from './modules/like/like.module';
       extra: {
         connectionLimit: 10,
         acquireTimeout: 60000,
-        timeout: 60000,
-        reconnect: true,
+        waitForConnections: true,
+        queueLimit: 0,
       },
       // Retry settings
       retryAttempts: 3,

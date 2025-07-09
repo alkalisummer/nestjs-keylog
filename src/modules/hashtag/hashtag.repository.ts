@@ -8,7 +8,7 @@ export interface HashtagWithPost {
   postId: number;
   hashtagId: number;
   hashtagName: string;
-  rgsnDttm: Date;
+  rgsnDttm: string;
 }
 
 export interface HashtagInfo {

@@ -15,7 +15,7 @@ export interface PostListItem {
   postCntn: string;
   postThmbImgUrl: string;
   authorId: string;
-  rgsnDttm: Date;
+  rgsnDttm: string;
   userNickname: string;
   userThmbImgUrl: string;
   commentCnt: number;
@@ -29,21 +29,21 @@ export interface PostDetail {
   postHtmlCntn: string;
   authorId: string;
   tempYn: string;
-  amntDttm: Date;
+  amntDttm: string;
 }
 
 export interface RecentPost {
   postId: number;
   postTitle: string;
   postThmbImgUrl: string;
-  rgsnDttm: Date;
+  rgsnDttm: string;
 }
 
 export interface PopularPost {
   postId: number;
   postTitle: string;
   postThmbImgUrl: string;
-  rgsnDttm: Date;
+  rgsnDttm: string;
   likeCnt: number;
 }
 

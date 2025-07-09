@@ -10,7 +10,7 @@ export interface PostTagWithDetails {
   hashtagId: number;
   hashtagName: string;
   postTitle: string;
-  rgsnDttm: Date;
+  rgsnDttm: string;
 }
 
 export interface PostTagCount {

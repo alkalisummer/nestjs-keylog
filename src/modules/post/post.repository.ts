@@ -99,8 +99,17 @@ export class PostRepository {
         B.user_nickname AS userNickname,
         B.user_thmb_img_url AS userThmbImgUrl,
         COUNT(DISTINCT C.comment_id) AS commentCnt,
-        COUNT(DISTINCT D.likeact_id) AS likeCnt
-        ${tagId ? ', F.hashtag_name AS hashtagName' : ''}
+                COUNT(DISTINCT D.likeact_id) AS likeCnt,
+        ${
+          tagId
+            ? 'F.hashtag_name AS hashtagName'
+            : `(SELECT H.hashtag_name 
+           FROM POST_TAG PT 
+           JOIN HASHTAG H ON PT.hashtag_id = H.hashtag_id 
+           WHERE PT.post_id = A.post_id 
+           ORDER BY H.hashtag_id ASC 
+           LIMIT 1) AS hashtagName`
+        }
       FROM POST A
       LEFT JOIN USER B ON A.rgsr_id = B.user_id
       LEFT JOIN COMMENT C ON A.post_id = C.post_id

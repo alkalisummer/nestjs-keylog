@@ -9,6 +9,7 @@ import { CommentListQueryDto } from './dto/comment-list-query.dto';
 import { timeToString } from '../../shared/utils';
 
 export interface CommentListItem {
+  postId: number;
   commentId: number;
   commentDepth: number;
   commentOriginId: number;
@@ -20,16 +21,7 @@ export interface CommentListItem {
   replyCnt: number;
 }
 
-export interface RecentComment {
-  commentId: number;
-  commentCntn: string;
-  rgsnDttm: string;
-  postId: number;
-  authorId: string;
-  userNickname: string;
-}
-
-export interface CommentResponse {
+export interface CommentRes {
   totalItems: number;
   items: CommentListItem[];
   commentId?: number;
@@ -45,10 +37,11 @@ export class CommentRepository {
 
   async getCommentList(params: CommentListQueryDto): Promise<CommentListItem[]> {
     const { postId } = params;
-
+    debugger;
     const result: CommentListItem[] = await this.commentRepository
       .createQueryBuilder('A')
       .select([
+        'A.post_id AS postId',
         'A.comment_id AS commentId',
         'A.comment_depth AS commentDepth',
         'A.comment_origin_id AS commentOriginId',
@@ -121,8 +114,8 @@ export class CommentRepository {
       .execute();
   }
 
-  async getRecentComments(authorId: string, limit: number = 3): Promise<RecentComment[]> {
-    const result: RecentComment[] = await this.commentRepository
+  async getRecentComments(authorId: string, limit: number = 3): Promise<Partial<CommentListItem>[]> {
+    const result: Partial<CommentListItem>[] = await this.commentRepository
       .createQueryBuilder('A')
       .select([
         'A.comment_id AS commentId',

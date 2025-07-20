@@ -1,5 +1,5 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { HashtagRepository, HashtagWithPost, HashtagInfo } from './hashtag.repository';
+import { HashtagRepository, PostHashtags, HashtagInfo } from './hashtag.repository';
 import { CreateHashtagDto } from './dto/create-hashtag.dto';
 import { HashtagQueryDto } from './dto/hashtag-query.dto';
 import { Hashtag } from './entities/hashtag.entity';
@@ -9,7 +9,7 @@ export class HashtagService {
   constructor(private readonly hashtagRepository: HashtagRepository) {}
 
   // 포스트별 또는 사용자별 해시태그 조회
-  async getHashtagsByPost(params: HashtagQueryDto): Promise<HashtagWithPost[]> {
+  async getHashtagsByPost(params: HashtagQueryDto): Promise<PostHashtags[]> {
     return this.hashtagRepository.getHashtagsByPost({
       postId: params.postId,
       userId: params.id,

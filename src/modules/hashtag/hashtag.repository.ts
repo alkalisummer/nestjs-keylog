@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Hashtag } from './entities/hashtag.entity';
 import { CreateHashtagDto } from './dto/create-hashtag.dto';
 
-export interface HashtagWithPost {
+export interface PostHashtags {
   postId: number;
   hashtagId: number;
   hashtagName: string;
@@ -25,7 +25,7 @@ export class HashtagRepository {
   ) {}
 
   // getHashtag 기능 - 포스트별 해시태그 조회 또는 사용자별 해시태그 조회
-  async getHashtagsByPost(params: { postId?: string; userId?: string }): Promise<HashtagWithPost[]> {
+  async getHashtagsByPost(params: { postId?: string; userId?: string }): Promise<PostHashtags[]> {
     const { postId, userId } = params;
 
     let query = this.hashtagRepository
@@ -51,7 +51,7 @@ export class HashtagRepository {
         .orderBy('C.rgsn_dttm', 'DESC');
     }
 
-    const result: HashtagWithPost[] = await query.getRawMany();
+    const result: PostHashtags[] = await query.getRawMany();
     return result;
   }
 

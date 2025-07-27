@@ -32,6 +32,8 @@ import { LikeModule } from './modules/like/like.module';
         acquireTimeout: 60000,
         waitForConnections: true,
         queueLimit: 0,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 10000,
       },
       // Retry settings
       retryAttempts: 3,

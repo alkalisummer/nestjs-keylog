@@ -141,7 +141,7 @@ export class UserRepository {
     return this.verifyCodeRepository.save(verifyCode);
   }
 
-  async getVerifyCode(verifyCodeId: number): Promise<VerifyCodeInfo | undefined> {
+  async getVerifyCode(code: string): Promise<VerifyCodeInfo | undefined> {
     const result: VerifyCodeInfo | undefined = await this.verifyCodeRepository
       .createQueryBuilder('verifyCode')
       .select([
@@ -149,14 +149,14 @@ export class UserRepository {
         'verifyCode.verify_code AS verifyCode',
         'verifyCode.expiration_time AS expirationTime',
       ])
-      .where('verifyCode.verify_code_id = :verifyCodeId', { verifyCodeId })
+      .where('verifyCode.verify_code = :code', { code })
       .getRawOne();
 
     return result;
   }
 
-  async deleteVerifyCode(verifyCodeId: number): Promise<void> {
-    await this.verifyCodeRepository.delete(verifyCodeId);
+  async deleteVerifyCode(code: string): Promise<void> {
+    await this.verifyCodeRepository.delete({ verifyCode: code });
   }
 
   async createUserToken(createUserTokenDto: CreateUserTokenDto): Promise<UserToken> {

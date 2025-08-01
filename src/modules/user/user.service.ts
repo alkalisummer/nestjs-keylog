@@ -69,12 +69,12 @@ export class UserService {
     return this.userRepository.createVerifyCode(createVerifyCodeDto);
   }
 
-  async getVerifyCode(verifyCodeId: number): Promise<VerifyCodeInfo | undefined> {
-    return this.userRepository.getVerifyCode(verifyCodeId);
+  async getVerifyCode(code: string): Promise<VerifyCodeInfo | undefined> {
+    return this.userRepository.getVerifyCode(code);
   }
 
-  async deleteVerifyCode(verifyCodeId: number): Promise<void> {
-    await this.userRepository.deleteVerifyCode(verifyCodeId);
+  async deleteVerifyCode(code: string): Promise<void> {
+    await this.userRepository.deleteVerifyCode(code);
   }
 
   async createUserToken(createUserTokenDto: CreateUserTokenDto): Promise<UserToken> {

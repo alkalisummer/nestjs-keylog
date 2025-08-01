@@ -8,7 +8,6 @@ import {
   Body,
   Query,
   ValidationPipe,
-  ParseIntPipe,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -92,23 +91,23 @@ export class UserController {
     return { message: 'User deleted successfully' };
   }
 
-  @Post('verify-codes')
+  @Post('verifyCode')
   async createVerifyCode(@Body(ValidationPipe) createVerifyCodeDto: CreateVerifyCodeDto) {
     return this.userService.createVerifyCode(createVerifyCodeDto);
   }
 
-  @Get('verify-codes/:verifyCodeId')
-  async getVerifyCode(@Param('verifyCodeId', ParseIntPipe) verifyCodeId: number) {
-    const verifyCode = await this.userService.getVerifyCode(verifyCodeId);
+  @Get('verifyCode/:code')
+  async getVerifyCode(@Param('code') code: string) {
+    const verifyCode = await this.userService.getVerifyCode(code);
     if (!verifyCode) {
       throw new HttpException('Verify code not found', HttpStatus.NOT_FOUND);
     }
     return verifyCode;
   }
 
-  @Delete('verify-codes/:verifyCodeId')
-  async deleteVerifyCode(@Param('verifyCodeId', ParseIntPipe) verifyCodeId: number) {
-    await this.userService.deleteVerifyCode(verifyCodeId);
+  @Delete('verifyCode/:code')
+  async deleteVerifyCode(@Param('code') code: string) {
+    await this.userService.deleteVerifyCode(code);
     return { message: 'Verify code deleted successfully' };
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Query, Body, ValidationPipe, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Query, Body, ValidationPipe } from '@nestjs/common';
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { DeleteLikeDto } from './dto/delete-like.dto';
@@ -9,8 +9,9 @@ export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
   @Get('count')
-  async getLikeCount(@Query('postId', ParseIntPipe) postId: number) {
-    const query: LikeQueryDto = { postId };
+  async getLikeCount(@Query('postId') postId: string) {
+    const parsedPostId = parseInt(postId);
+    const query: LikeQueryDto = { postId: parsedPostId };
     return this.likeService.getLikeCount(query);
   }
 
@@ -20,7 +21,9 @@ export class LikeController {
   }
 
   @Delete()
-  async deleteLike(@Body(ValidationPipe) deleteLikeDto: DeleteLikeDto) {
+  async deleteLike(@Query('postId') postId: string, @Query('userId') userId: string) {
+    const parsedPostId = parseInt(postId);
+    const deleteLikeDto: DeleteLikeDto = { userId, postId: parsedPostId };
     return this.likeService.deleteLike(deleteLikeDto);
   }
 }

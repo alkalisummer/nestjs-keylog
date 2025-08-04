@@ -134,7 +134,7 @@ export class UserRepository {
 
     const verifyCode = this.verifyCodeRepository.create({
       verifyCode: createVerifyCodeDto.verifyCode,
-      expirationTime: createVerifyCodeDto.expirationTime,
+      expirationTime: createVerifyCodeDto.expireTime,
       rgsnDttm: currentTime,
     });
 

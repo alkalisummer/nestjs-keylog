@@ -126,7 +126,8 @@ export class UserController {
   }
 
   @Delete('tokens')
-  async deleteUserToken(@Body(ValidationPipe) deleteUserTokenDto: DeleteUserTokenDto) {
+  async deleteUserToken(@Query('token') token: string, @Query('userId') userId: string) {
+    const deleteUserTokenDto: DeleteUserTokenDto = { token, userId };
     await this.userService.deleteUserToken(deleteUserTokenDto);
     return { message: 'User token deleted successfully' };
   }

@@ -5,7 +5,7 @@ export class CreateVerifyCodeDto {
   verifyCode: string;
 
   @IsString()
-  expirationTime: string;
+  expireTime: string;
 }
 
 export class GetVerifyCodeDto {

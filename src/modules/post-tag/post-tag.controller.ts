@@ -87,7 +87,11 @@ export class PostTagController {
   // DELETE /postTag - 포스트-태그 관계 삭제
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePostTag(@Body(ValidationPipe) deletePostTagDto: DeletePostTagDto) {
+  async deletePostTag(
+    @Query('postId', ParseIntPipe) postId: number,
+    @Query('hashtagId', ParseIntPipe) hashtagId: number,
+  ) {
+    const deletePostTagDto: DeletePostTagDto = { postId, hashtagId };
     await this.postTagService.deletePostTag(deletePostTagDto);
     return { message: 'Post-tag relationship deleted successfully' };
   }

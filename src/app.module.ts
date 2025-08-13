@@ -7,6 +7,7 @@ import { CommentModule } from './modules/comment/comment.module';
 import { HashtagModule } from './modules/hashtag/hashtag.module';
 import { PostTagModule } from './modules/post-tag/post-tag.module';
 import { LikeModule } from './modules/like/like.module';
+import { AuthModule } from './core/auth/auth.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { LikeModule } from './modules/like/like.module';
     HashtagModule,
     PostTagModule,
     LikeModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

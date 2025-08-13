@@ -6,9 +6,10 @@ import { UserRepository } from './user.repository';
 import { User } from './entities/user.entity';
 import { VerifyCode } from './entities/verify-code.entity';
 import { UserToken } from './entities/user-token.entity';
+import { AuthModule } from '../../core/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, VerifyCode, UserToken])],
+  imports: [TypeOrmModule.forFeature([User, VerifyCode, UserToken]), AuthModule],
   controllers: [UserController],
   providers: [UserService, UserRepository],
   exports: [UserService, UserRepository],

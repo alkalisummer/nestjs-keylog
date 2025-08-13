@@ -4,11 +4,13 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreateReplyDto } from './dto/create-reply.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentListQueryDto } from './dto/comment-list-query.dto';
+import { Public } from '../../core/auth/public.decorator';
 
 @Controller('comment')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
+  @Public()
   @Get()
   async getCommentList(@Query(new ValidationPipe({ transform: true })) query: CommentListQueryDto) {
     return this.commentService.getCommentList(query);
@@ -39,6 +41,7 @@ export class CommentController {
     return this.commentService.deleteComment(commentId, postId);
   }
 
+  @Public()
   @Get('recent/:authorId')
   async getRecentComments(
     @Param('authorId') authorId: string,

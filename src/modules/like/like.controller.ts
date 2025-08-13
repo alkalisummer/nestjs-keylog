@@ -3,11 +3,13 @@ import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { DeleteLikeDto } from './dto/delete-like.dto';
 import { LikeQueryDto } from './dto/like-query.dto';
+import { Public } from '../../core/auth/public.decorator';
 
 @Controller('like')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
+  @Public()
   @Get('count')
   async getLikeCount(@Query('postId') postId: string) {
     const parsedPostId = parseInt(postId);

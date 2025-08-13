@@ -3,16 +3,19 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostListQueryDto } from './dto/post-list-query.dto';
+import { Public } from '../../core/auth/public.decorator';
 
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @Public()
   @Get()
   async getPostList(@Query(new ValidationPipe({ transform: true })) query: PostListQueryDto) {
     return this.postService.getPostList(query);
   }
 
+  @Public()
   @Get(':id')
   async getPostById(@Param('id', ParseIntPipe) postId: number) {
     return this.postService.getPostById(postId);
@@ -32,7 +35,8 @@ export class PostController {
   }
 
   @Delete(':id')
-  async deletePost(@Param('id', ParseIntPipe) postId: number) {
+  async deletePost(@Param('id') postId: number) {
+    console.log('delete Post');
     await this.postService.deletePost(postId);
     return { message: 'Post deleted successfully' };
   }
@@ -43,6 +47,7 @@ export class PostController {
     return { message: 'All posts deleted for user' };
   }
 
+  @Public()
   @Get('recent/:authorId')
   async getRecentPosts(
     @Param('authorId') authorId: string,
@@ -51,6 +56,7 @@ export class PostController {
     return this.postService.getRecentPosts(authorId, limit);
   }
 
+  @Public()
   @Get('popular/:authorId')
   async getPopularPosts(
     @Param('authorId') authorId: string,
@@ -65,6 +71,7 @@ export class PostController {
     return { message: 'Temp post deleted successfully' };
   }
 
+  @Public()
   @Get('temp/last/:postId')
   async getLastTempPost(@Param('postId', ParseIntPipe) postId: number) {
     return this.postService.getLastTempPost(postId);

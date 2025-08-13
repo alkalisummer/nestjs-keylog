@@ -15,36 +15,42 @@ import {
 import { HashtagService } from './hashtag.service';
 import { CreateHashtagDto } from './dto/create-hashtag.dto';
 import { HashtagQueryDto } from './dto/hashtag-query.dto';
+import { Public } from '../../core/auth/public.decorator';
 
 @Controller('hashtag')
 export class HashtagController {
   constructor(private readonly hashtagService: HashtagService) {}
 
   // GET /hashtag - 모든 해시태그 조회
+  @Public()
   @Get()
   async getAllHashtags() {
     return this.hashtagService.getAllHashtags();
   }
 
   // GET /hashtag/search - 해시태그 검색 (포스트별/사용자별)
+  @Public()
   @Get('search')
   async getHashtagsByPost(@Query(new ValidationPipe({ transform: true })) query: HashtagQueryDto) {
     return this.hashtagService.getHashtagsByPost(query);
   }
 
   // GET /hashtag/search-name/:searchTerm - 해시태그 이름으로 검색
+  @Public()
   @Get('search-name/:searchTerm')
   async searchHashtagsByName(@Param('searchTerm') searchTerm: string) {
     return this.hashtagService.searchHashtagsByName(searchTerm);
   }
 
   // GET /hashtag/info/:userId - 사용자별 해시태그 정보 조회
+  @Public()
   @Get('info/:userId')
   async getHashtags(@Param('userId') userId: string) {
     return this.hashtagService.getHashtags(userId);
   }
 
   // GET /hashtag/check/:hashtagName - 해시태그 존재 여부 확인
+  @Public()
   @Get('check/:hashtagName')
   async checkHashtag(@Param('hashtagName') hashtagName: string) {
     const hashtag = await this.hashtagService.findHashtagByName(hashtagName);
@@ -55,6 +61,7 @@ export class HashtagController {
   }
 
   // GET /hashtag/:id - ID로 해시태그 조회
+  @Public()
   @Get(':id')
   async getHashtagById(@Param('id', ParseIntPipe) hashtagId: number) {
     return this.hashtagService.getHashtagById(hashtagId);

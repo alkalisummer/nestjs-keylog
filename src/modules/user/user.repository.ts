@@ -14,7 +14,6 @@ export interface UserInfo {
   userId: string;
   userEmail: string;
   userNickname: string;
-  userPassword: string;
   userThmbImgUrl: string;
   userBlogName: string;
 }
@@ -49,7 +48,6 @@ export class UserRepository {
         'user.user_id AS userId',
         'user.user_email AS userEmail',
         'user.user_nickname AS userNickname',
-        'user.user_password AS userPassword',
         'user.user_thmb_img_url AS userThmbImgUrl',
         'user.user_blog_name AS userBlogName',
       ])
@@ -61,6 +59,22 @@ export class UserRepository {
 
     const result: UserInfo | undefined = await query.getRawOne();
     return result;
+  }
+
+  async getUserPassword(userId: string, userEmail?: string): Promise<string | undefined> {
+    let query = this.userRepository
+      .createQueryBuilder('user')
+      .select('user.user_password AS userPassword')
+      .where('user.user_id = :userId', { userId });
+
+    if (userEmail) {
+      query = query.andWhere('user.user_email = :userEmail', { userEmail });
+    }
+
+    const result: { userPassword?: string } | undefined = await query.getRawOne();
+    const userPassword = result?.userPassword;
+
+    return userPassword;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {

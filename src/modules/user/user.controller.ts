@@ -13,15 +13,18 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-
 import { LoginUserDto } from './dto/login-user.dto';
 import { CreateVerifyCodeDto } from './dto/verify-code.dto';
 import { CreateUserTokenDto, DeleteUserTokenDto } from './dto/user-token.dto';
+import { Req, Res } from '@nestjs/common';
+import { Public } from '../../core/auth/public.decorator';
+import { buildRefreshCookieOptions, clearCookie, getCookie, setCookie } from '../../shared/utils';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Get(':userId')
   async getUserById(@Param('userId') userId: string, @Query('email') userEmail?: string) {
     const user = await this.userService.getUserById(userId, userEmail);
@@ -31,15 +34,44 @@ export class UserController {
     return user;
   }
 
+  @Public()
   @Post('login')
-  async loginUser(@Body(ValidationPipe) loginUserDto: LoginUserDto) {
-    const user = await this.userService.loginUser(loginUserDto);
-    if (!user) {
+  async loginUser(@Body(ValidationPipe) loginUserDto: LoginUserDto, @Res({ passthrough: true }) res: unknown) {
+    const userRes = await this.userService.loginUser(loginUserDto);
+    if (!userRes) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
-    return user;
+    const { accessToken, refreshToken, user } = userRes;
+    setCookie(res, 'refreshToken', refreshToken, buildRefreshCookieOptions());
+    return { accessToken, user };
   }
 
+  @Public()
+  @Post('refresh')
+  async refreshTokens(@Req() req: unknown, @Res({ passthrough: true }) res: unknown) {
+    const cookieToken = getCookie(req, 'refreshToken');
+    const result = await this.userService.refreshTokens({ refreshToken: cookieToken ?? '' });
+    if (!result) {
+      throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
+    }
+    setCookie(res, 'refreshToken', result.refreshToken, buildRefreshCookieOptions());
+    return { accessToken: result.accessToken, user: result.user };
+  }
+
+  @Post('logout')
+  async logout(@Req() req: unknown, @Res({ passthrough: true }) res: unknown) {
+    const token = getCookie(req, 'refreshToken');
+    if (token) {
+      const info = await this.userService.getUserToken(token);
+      if (info) {
+        await this.userService.deleteUserToken({ token: info.token, userId: info.userId });
+      }
+    }
+    clearCookie(res, 'refreshToken', { path: '/' });
+    return { message: 'Logged out' };
+  }
+
+  @Public()
   @Post('signup')
   async createUser(@Body(ValidationPipe) createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
@@ -79,23 +111,19 @@ export class UserController {
     return { message: 'Email updated successfully' };
   }
 
-  @Get(':userId/password')
-  async getCurrentPassword(@Param('userId') userId: string) {
-    const password = await this.userService.getCurrentPassword(userId);
-    return { password };
-  }
-
   @Delete(':userId')
   async deleteUser(@Param('userId') userId: string) {
     await this.userService.deleteUser(userId);
     return { message: 'User deleted successfully' };
   }
 
+  @Public()
   @Post('verifyCode')
   async createVerifyCode(@Body(ValidationPipe) createVerifyCodeDto: CreateVerifyCodeDto) {
     return this.userService.createVerifyCode(createVerifyCodeDto);
   }
 
+  @Public()
   @Get('verifyCode/:code')
   async getVerifyCode(@Param('code') code: string) {
     const verifyCode = await this.userService.getVerifyCode(code);
@@ -105,6 +133,7 @@ export class UserController {
     return verifyCode;
   }
 
+  @Public()
   @Delete('verifyCode/:code')
   async deleteVerifyCode(@Param('code') code: string) {
     await this.userService.deleteVerifyCode(code);

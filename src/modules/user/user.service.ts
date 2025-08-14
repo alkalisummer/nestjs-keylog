@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository, UserInfo, TokenInfo, VerifyCodeInfo } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-
+import { REFRESH_TOKEN, JWT } from '../../shared/lib/constants/';
 import { LoginUserDto } from './dto/login-user.dto';
 import { CreateVerifyCodeDto } from './dto/verify-code.dto';
 import { CreateUserTokenDto, DeleteUserTokenDto } from './dto/user-token.dto';
@@ -51,8 +51,9 @@ export class UserService {
 
     const payload = { sub: userInfo.userId, email: userInfo.userEmail };
     const accessToken = await this.jwtService.signAsync(payload);
+    const accessTokenExpireDate = new Date(Date.now() + JWT.EXPIRES_IN);
     const refreshToken = await this.generateRefreshToken(userInfo.userId);
-    return { accessToken, refreshToken, user: userInfo };
+    return { accessToken, accessTokenExpireDate, refreshToken, user: userInfo };
   }
 
   async refreshTokens(dto: RefreshTokenDto): Promise<LoginResponse | null> {
@@ -73,13 +74,14 @@ export class UserService {
     await this.userRepository.deleteUserToken({ token: tokenInfo.token, userId: tokenInfo.userId });
     const newRefreshToken = await this.generateRefreshToken(tokenInfo.userId);
     const accessToken = await this.jwtService.signAsync({ sub: userInfo.userId, email: userInfo.userEmail });
-    return { accessToken, refreshToken: newRefreshToken, user: userInfo };
+    const accessTokenExpireDate = new Date(Date.now() + JWT.EXPIRES_IN);
+    return { accessToken, accessTokenExpireDate, refreshToken: newRefreshToken, user: userInfo };
   }
 
   private async generateRefreshToken(userId: string): Promise<string> {
     const { randomBytes } = await import('crypto');
     const token = randomBytes(48).toString('hex');
-    const expiresInDays = parseInt(process.env.REFRESH_EXPIRES_DAYS || '14', 10);
+    const expiresInDays = REFRESH_TOKEN.EXPIRES_DAYS;
     const expireDate = new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000);
     const expireTime = timeToString(expireDate);
     const createUserTokenDto: CreateUserTokenDto = { token, userId, expireTime };

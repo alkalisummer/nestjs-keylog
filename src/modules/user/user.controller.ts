@@ -19,6 +19,8 @@ import { CreateUserTokenDto, DeleteUserTokenDto } from './dto/user-token.dto';
 import { Req, Res } from '@nestjs/common';
 import { Public } from '../../core/auth/public.decorator';
 import { buildRefreshCookieOptions, clearCookie, getCookie, setCookie } from '../../shared/utils';
+import { FastifyReply } from 'fastify';
+import '@fastify/cookie';
 
 @Controller('user')
 export class UserController {
@@ -36,30 +38,31 @@ export class UserController {
 
   @Public()
   @Post('login')
-  async loginUser(@Body(ValidationPipe) loginUserDto: LoginUserDto, @Res({ passthrough: true }) res: unknown) {
-    const userRes = await this.userService.loginUser(loginUserDto);
-    if (!userRes) {
+  async loginUser(@Body(ValidationPipe) loginUserDto: LoginUserDto, @Res({ passthrough: true }) res: FastifyReply) {
+    const loginRes = await this.userService.loginUser(loginUserDto);
+    if (!loginRes) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
-    const { accessToken, refreshToken, user } = userRes;
+    const { accessToken, accessTokenExpireDate, refreshToken, user } = loginRes;
     setCookie(res, 'refreshToken', refreshToken, buildRefreshCookieOptions());
-    return { accessToken, user };
+    return { accessToken, accessTokenExpireDate, user };
   }
 
   @Public()
   @Post('refresh')
-  async refreshTokens(@Req() req: unknown, @Res({ passthrough: true }) res: unknown) {
+  async refreshTokens(@Req() req: unknown, @Res({ passthrough: true }) res: FastifyReply) {
     const cookieToken = getCookie(req, 'refreshToken');
     const result = await this.userService.refreshTokens({ refreshToken: cookieToken ?? '' });
     if (!result) {
       throw new HttpException('Invalid refresh token', HttpStatus.UNAUTHORIZED);
     }
-    setCookie(res, 'refreshToken', result.refreshToken, buildRefreshCookieOptions());
-    return { accessToken: result.accessToken, user: result.user };
+    const { accessToken, accessTokenExpireDate, refreshToken, user } = result;
+    setCookie(res, 'refreshToken', refreshToken, buildRefreshCookieOptions());
+    return { accessToken, accessTokenExpireDate, user };
   }
 
   @Post('logout')
-  async logout(@Req() req: unknown, @Res({ passthrough: true }) res: unknown) {
+  async logout(@Req() req: unknown, @Res({ passthrough: true }) res: FastifyReply) {
     const token = getCookie(req, 'refreshToken');
     if (token) {
       const info = await this.userService.getUserToken(token);

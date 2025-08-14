@@ -1,24 +1,37 @@
+import { REFRESH_TOKEN } from '../lib/constants';
+import type { FastifyReply } from 'fastify';
+import '@fastify/cookie';
+
+export type SameSite = 'lax' | 'strict' | 'none';
+
 export type CookieWriteOptions = {
   httpOnly?: boolean;
   secure?: boolean;
-  sameSite?: 'lax' | 'strict' | 'none';
+  sameSite?: SameSite;
   path?: string;
   domain?: string;
   maxAge?: number;
 };
 
-export function setCookie(res: unknown, name: string, value: string, options: CookieWriteOptions): void {
-  const reply = res as { setCookie?: (n: string, v: string, o: CookieWriteOptions) => void };
-  if (typeof reply.setCookie === 'function') {
-    reply.setCookie(name, value, options);
-  }
+// Type augmentation for FastifyReply with cookie methods
+interface FastifyReplyWithCookies extends FastifyReply {
+  setCookie: (name: string, value: string, options?: CookieWriteOptions) => FastifyReply;
+  clearCookie: (name: string, options?: Pick<CookieWriteOptions, 'path' | 'domain'>) => FastifyReply;
 }
 
-export function clearCookie(res: unknown, name: string, options?: Pick<CookieWriteOptions, 'path' | 'domain'>): void {
-  const reply = res as { clearCookie?: (n: string, o?: Pick<CookieWriteOptions, 'path' | 'domain'>) => void };
-  if (typeof reply.clearCookie === 'function') {
-    reply.clearCookie(name, options);
-  }
+export function setCookie(res: FastifyReply, name: string, value: string, options: CookieWriteOptions): void {
+  const reply = res as FastifyReplyWithCookies;
+  console.log('setCookie', name, value, options);
+  reply.setCookie(name, value, options);
+}
+
+export function clearCookie(
+  res: FastifyReply,
+  name: string,
+  options?: Pick<CookieWriteOptions, 'path' | 'domain'>,
+): void {
+  const reply = res as FastifyReplyWithCookies;
+  reply.clearCookie(name, options);
 }
 
 export function getCookie(req: unknown, name: string): string | undefined {
@@ -27,11 +40,23 @@ export function getCookie(req: unknown, name: string): string | undefined {
 }
 
 export function buildRefreshCookieOptions(): CookieWriteOptions {
-  const maxAgeDays = parseInt(process.env.REFRESH_EXPIRES_DAYS || '14', 10);
+  const isProduction = process.env.NODE_ENV === 'production';
+  const maxAgeDays = REFRESH_TOKEN.EXPIRES_DAYS;
+  const configuredSameSite = isProduction ? (REFRESH_TOKEN.SAMESITE as SameSite) : 'lax';
+  const configuredSecure = isProduction ? REFRESH_TOKEN.SECURE : false;
+  const isCrossSite = Boolean(process.env.CORS_ORIGIN);
+  const sameSite: SameSite = configuredSameSite ?? (isCrossSite && isProduction ? 'none' : 'lax');
+  const secure: boolean = configuredSecure ?? sameSite === 'none';
+  console.log('buildRefreshCookieOptions', {
+    secure,
+    sameSite,
+    path: '/',
+    maxAge: maxAgeDays * 24 * 60 * 60,
+  });
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    ...(secure && { secure }),
+    sameSite,
     path: '/',
     maxAge: maxAgeDays * 24 * 60 * 60,
   };

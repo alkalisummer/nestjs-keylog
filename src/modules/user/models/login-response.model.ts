@@ -2,6 +2,7 @@ import { UserInfo } from '../user.repository';
 
 export interface LoginResponse {
   accessToken: string;
+  accessTokenExpireDate: Date;
   refreshToken: string;
   user: UserInfo;
 }

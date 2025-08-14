@@ -11,6 +11,7 @@ import { VerifyCode } from './entities/verify-code.entity';
 import { UserToken } from './entities/user-token.entity';
 import { comparePassword } from '../../shared/utils';
 import { timeToString } from '../../shared/utils';
+import { parseDurationToMs } from '../../shared/utils';
 import { JwtService } from '@nestjs/jwt';
 import { LoginResponse } from './models/login-response.model';
 
@@ -49,9 +50,11 @@ export class UserService {
       return null;
     }
 
-    const payload = { sub: userInfo.userId, email: userInfo.userEmail };
-    const accessToken = await this.jwtService.signAsync(payload);
-    const accessTokenExpireDate = new Date(Date.now() + JWT.EXPIRES_IN);
+    const payload: { sub: string; email: string } = { sub: userInfo.userId, email: userInfo.userEmail };
+    const accessToken: string = await this.jwtService.signAsync(payload);
+    const expiresInRaw: string = JWT.EXPIRES_IN;
+    const expiresInMs: number = parseDurationToMs(expiresInRaw);
+    const accessTokenExpireDate: number = Date.now() + expiresInMs;
     const refreshToken = await this.generateRefreshToken(userInfo.userId);
     return { accessToken, accessTokenExpireDate, refreshToken, user: userInfo };
   }
@@ -73,8 +76,11 @@ export class UserService {
     }
     await this.userRepository.deleteUserToken({ token: tokenInfo.token, userId: tokenInfo.userId });
     const newRefreshToken = await this.generateRefreshToken(tokenInfo.userId);
-    const accessToken = await this.jwtService.signAsync({ sub: userInfo.userId, email: userInfo.userEmail });
-    const accessTokenExpireDate = new Date(Date.now() + JWT.EXPIRES_IN);
+    const refreshPayload: { sub: string; email: string } = { sub: userInfo.userId, email: userInfo.userEmail };
+    const accessToken: string = await this.jwtService.signAsync(refreshPayload);
+    const expiresInRaw: string = JWT.EXPIRES_IN;
+    const expiresInMs: number = parseDurationToMs(expiresInRaw);
+    const accessTokenExpireDate: number = Date.now() + expiresInMs;
     return { accessToken, accessTokenExpireDate, refreshToken: newRefreshToken, user: userInfo };
   }
 

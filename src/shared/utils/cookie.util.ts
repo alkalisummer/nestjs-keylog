@@ -21,7 +21,6 @@ interface FastifyReplyWithCookies extends FastifyReply {
 
 export function setCookie(res: FastifyReply, name: string, value: string, options: CookieWriteOptions): void {
   const reply = res as FastifyReplyWithCookies;
-  console.log('setCookie', name, value, options);
   reply.setCookie(name, value, options);
 }
 
@@ -47,12 +46,6 @@ export function buildRefreshCookieOptions(): CookieWriteOptions {
   const isCrossSite = Boolean(process.env.CORS_ORIGIN);
   const sameSite: SameSite = configuredSameSite ?? (isCrossSite && isProduction ? 'none' : 'lax');
   const secure: boolean = configuredSecure ?? sameSite === 'none';
-  console.log('buildRefreshCookieOptions', {
-    secure,
-    sameSite,
-    path: '/',
-    maxAge: maxAgeDays * 24 * 60 * 60,
-  });
   return {
     httpOnly: true,
     ...(secure && { secure }),

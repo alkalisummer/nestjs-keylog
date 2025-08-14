@@ -44,6 +44,7 @@ export class UserController {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
     const { accessToken, accessTokenExpireDate, refreshToken, user } = loginRes;
+    console.log('accessTokenExpireDate', accessTokenExpireDate);
     setCookie(res, 'refreshToken', refreshToken, buildRefreshCookieOptions());
     return { accessToken, accessTokenExpireDate, user };
   }

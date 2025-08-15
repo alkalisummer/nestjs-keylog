@@ -15,6 +15,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { CreateVerifyCodeDto } from './dto/verify-code.dto';
+import { VerifyPasswordDto } from './dto/verify-password.dto';
 import { CreateUserTokenDto, DeleteUserTokenDto } from './dto/user-token.dto';
 import { Req, Res } from '@nestjs/common';
 import { Public } from '../../core/auth/public.decorator';
@@ -44,7 +45,6 @@ export class UserController {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
     const { accessToken, accessTokenExpireDate, refreshToken, user } = loginRes;
-    console.log('accessTokenExpireDate', accessTokenExpireDate);
     setCookie(res, 'refreshToken', refreshToken, buildRefreshCookieOptions());
     return { accessToken, accessTokenExpireDate, user };
   }
@@ -163,5 +163,16 @@ export class UserController {
     const deleteUserTokenDto: DeleteUserTokenDto = { token, userId };
     await this.userService.deleteUserToken(deleteUserTokenDto);
     return { message: 'User token deleted successfully' };
+  }
+
+  @Post('password/verify')
+  async verifyPassword(@Req() req: unknown, @Body(ValidationPipe) dto: VerifyPasswordDto) {
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    const isValid = await this.userService.verifyPassword(requesterId, dto.userPassword);
+    return { isValid };
   }
 }

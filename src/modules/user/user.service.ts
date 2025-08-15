@@ -123,6 +123,15 @@ export class UserService {
     return this.userRepository.getCurrentPassword(userId);
   }
 
+  async verifyPassword(userId: string, userPassword: string): Promise<boolean> {
+    const currentHashedPassword: string | undefined = await this.userRepository.getCurrentPassword(userId);
+    if (!currentHashedPassword) {
+      return false;
+    }
+    const isValid = await comparePassword(userPassword, currentHashedPassword);
+    return isValid;
+  }
+
   async deleteUser(userId: string): Promise<void> {
     await this.userRepository.deleteUser(userId);
   }

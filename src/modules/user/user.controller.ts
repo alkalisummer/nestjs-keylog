@@ -81,43 +81,73 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
-  @Put(':userId/password')
-  async updatePassword(@Param('userId') userId: string, @Body('password') password: string) {
-    await this.userService.updatePassword(userId, password);
+  @Put('update/password')
+  async updatePassword(@Req() req: unknown, @Body('password') password: string) {
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.updatePassword(requesterId, password);
     return { message: 'Password updated successfully' };
   }
 
-  @Put(':userId/image')
-  async uploadUserImage(@Param('userId') userId: string, @Body('imageUrl') imageUrl: string) {
-    await this.userService.uploadUserImage(userId, imageUrl);
+  @Put('update/image')
+  async uploadUserImage(@Req() req: unknown, @Body('imageUrl') imageUrl: string) {
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.uploadUserImage(requesterId, imageUrl);
     return { message: 'User image uploaded successfully' };
   }
 
-  @Delete(':userId/image')
-  async deleteUserImage(@Param('userId') userId: string) {
-    await this.userService.deleteUserImage(userId);
+  @Delete('delete/image')
+  async deleteUserImage(@Req() req: unknown) {
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.deleteUserImage(requesterId);
     return { message: 'User image deleted successfully' };
   }
 
-  @Put(':userId/profile')
+  @Put('update/profile')
   async updateNicknameBlogName(
-    @Param('userId') userId: string,
+    @Req() req: unknown,
     @Body('nickname') nickname: string,
     @Body('blogName') blogName: string,
   ) {
-    await this.userService.updateNicknameBlogName(userId, nickname, blogName);
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.updateNicknameBlogName(requesterId, nickname, blogName);
     return { message: 'User profile updated successfully' };
   }
 
-  @Put(':userId/email')
-  async updateEmail(@Param('userId') userId: string, @Body('email') email: string) {
-    await this.userService.updateEmail(userId, email);
+  @Put('update/email')
+  async updateEmail(@Req() req: unknown, @Body('email') email: string) {
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.updateEmail(requesterId, email);
     return { message: 'Email updated successfully' };
   }
 
-  @Delete(':userId')
-  async deleteUser(@Param('userId') userId: string) {
-    await this.userService.deleteUser(userId);
+  @Delete('delete')
+  async deleteUser(@Req() req: unknown) {
+    type RequestWithUser = { user?: { userId?: string } };
+    const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!requesterId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.deleteUser(requesterId);
     return { message: 'User deleted successfully' };
   }
 
@@ -165,7 +195,7 @@ export class UserController {
     return { message: 'User token deleted successfully' };
   }
 
-  @Post('password/verify')
+  @Post('verify/password')
   async verifyPassword(@Req() req: unknown, @Body(ValidationPipe) dto: VerifyPasswordDto) {
     type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;

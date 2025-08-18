@@ -13,7 +13,7 @@ import { comparePassword } from '../../shared/utils';
 import { timeToString } from '../../shared/utils';
 import { parseDurationToMs } from '../../shared/utils';
 import { JwtService } from '@nestjs/jwt';
-import { LoginResponse } from './models/login-response.model';
+import { LoginResponse } from './models';
 
 @Injectable()
 export class UserService {

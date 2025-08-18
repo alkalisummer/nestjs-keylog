@@ -22,6 +22,7 @@ import { Public } from '../../core/auth/public.decorator';
 import { buildRefreshCookieOptions, clearCookie, getCookie, setCookie } from '../../shared/utils';
 import { FastifyReply } from 'fastify';
 import '@fastify/cookie';
+import { RequestWithUser } from './models';
 
 @Controller('user')
 export class UserController {
@@ -83,7 +84,6 @@ export class UserController {
 
   @Put('update/password')
   async updatePassword(@Req() req: unknown, @Body('password') password: string) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -94,7 +94,6 @@ export class UserController {
 
   @Put('update/image')
   async uploadUserImage(@Req() req: unknown, @Body('imageUrl') imageUrl: string) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -105,7 +104,6 @@ export class UserController {
 
   @Delete('delete/image')
   async deleteUserImage(@Req() req: unknown) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -120,7 +118,6 @@ export class UserController {
     @Body('nickname') nickname: string,
     @Body('blogName') blogName: string,
   ) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -131,7 +128,6 @@ export class UserController {
 
   @Put('update/email')
   async updateEmail(@Req() req: unknown, @Body('email') email: string) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -142,7 +138,6 @@ export class UserController {
 
   @Delete('delete')
   async deleteUser(@Req() req: unknown) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
@@ -197,7 +192,6 @@ export class UserController {
 
   @Post('verify/password')
   async verifyPassword(@Req() req: unknown, @Body(ValidationPipe) dto: VerifyPasswordDto) {
-    type RequestWithUser = { user?: { userId?: string } };
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
     if (!requesterId) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);

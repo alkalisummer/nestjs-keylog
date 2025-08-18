@@ -1,9 +1,24 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Query, ParseIntPipe, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+  ParseIntPipe,
+  ValidationPipe,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostListQueryDto } from './dto/post-list-query.dto';
 import { Public } from '../../core/auth/public.decorator';
+import { Req } from '@nestjs/common';
+import { RequestWithUser } from '../user/models';
 
 @Controller('post')
 export class PostController {
@@ -40,8 +55,12 @@ export class PostController {
     return { message: 'Post deleted successfully' };
   }
 
-  @Delete('user/:authorId')
-  async deletePostsByUserId(@Param('authorId') authorId: string) {
+  @Delete('delete/user')
+  async deletePostsByUserId(@Req() req: unknown) {
+    const authorId: string | undefined = (req as RequestWithUser)?.user?.userId;
+    if (!authorId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
     await this.postService.deletePostsByUserId(authorId);
     return { message: 'All posts deleted for user' };
   }

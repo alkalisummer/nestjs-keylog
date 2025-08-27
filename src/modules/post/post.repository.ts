@@ -138,7 +138,7 @@ export class PostRepository {
       .select([
         'post.post_id AS postId',
         'post.post_title AS postTitle',
-        'post.post_html_cntn AS postHtmlCntn',
+        'CONVERT(post.post_html_cntn USING utf8mb4) AS postHtmlCntn',
         'post.rgsr_id AS authorId',
         'post.temp_yn AS tempYn',
         'post.amnt_dttm AS amntDttm',
@@ -248,7 +248,7 @@ export class PostRepository {
       .select([
         'post.post_id AS postId',
         'post.post_title AS postTitle',
-        'post.post_html_cntn AS postHtmlCntn',
+        'CONVERT(post.post_html_cntn USING utf8mb4) AS postHtmlCntn',
         'post.rgsr_id AS authorId',
         'post.temp_yn AS tempYn',
         'post.amnt_dttm AS amntDttm',

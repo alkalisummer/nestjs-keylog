@@ -24,4 +24,7 @@ export class UpdatePostDto {
   @IsIn(['Y', 'N'])
   @IsOptional()
   tempYn?: string;
+
+  @IsOptional()
+  hashtagList?: string[];
 }

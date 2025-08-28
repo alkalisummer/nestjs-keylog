@@ -23,4 +23,7 @@ export class CreatePostDto {
 
   @IsOptional()
   postOriginId?: number;
+
+  @IsOptional()
+  hashtagList?: string[];
 }

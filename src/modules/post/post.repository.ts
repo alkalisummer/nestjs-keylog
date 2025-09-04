@@ -26,7 +26,9 @@ export interface PostListItem {
 export interface PostDetail {
   postId: number;
   postTitle: string;
+  postCntn: string;
   postHtmlCntn: string;
+  postThmbImgUrl: string;
   authorId: string;
   tempYn: string;
   amntDttm: string;
@@ -138,6 +140,8 @@ export class PostRepository {
       .select([
         'post.post_id AS postId',
         'post.post_title AS postTitle',
+        'post.post_cntn AS postCntn',
+        'post.post_thmb_img_url AS postThmbImgUrl',
         'CONVERT(post.post_html_cntn USING utf8mb4) AS postHtmlCntn',
         'post.rgsr_id AS authorId',
         'post.temp_yn AS tempYn',

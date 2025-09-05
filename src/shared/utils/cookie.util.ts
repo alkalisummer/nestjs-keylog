@@ -13,15 +13,8 @@ export type CookieWriteOptions = {
   maxAge?: number;
 };
 
-// Type augmentation for FastifyReply with cookie methods
-interface FastifyReplyWithCookies extends FastifyReply {
-  setCookie: (name: string, value: string, options?: CookieWriteOptions) => FastifyReply;
-  clearCookie: (name: string, options?: Pick<CookieWriteOptions, 'path' | 'domain'>) => FastifyReply;
-}
-
 export function setCookie(res: FastifyReply, name: string, value: string, options: CookieWriteOptions): void {
-  const reply = res as FastifyReplyWithCookies;
-  reply.setCookie(name, value, options);
+  res.setCookie(name, value, options);
 }
 
 export function clearCookie(
@@ -29,8 +22,7 @@ export function clearCookie(
   name: string,
   options?: Pick<CookieWriteOptions, 'path' | 'domain'>,
 ): void {
-  const reply = res as FastifyReplyWithCookies;
-  reply.clearCookie(name, options);
+  res.clearCookie(name, options);
 }
 
 export function getCookie(req: unknown, name: string): string | undefined {

@@ -33,7 +33,8 @@
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.25"
+    "typeorm": "^0.3.25",
+    "fastify": "^5.6.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -48,7 +49,6 @@
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
-    "fastify": "^5.5.0",
     "globals": "^16.0.0",
     "jsonwebtoken": "^9.0.2",
     "prettier": "^3.4.2",
@@ -58,5 +58,12 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "fastify": "5.6.0",
+      "@nestjs/platform-fastify>fastify": "5.6.0",
+      "@fastify/*>fastify": "5.6.0"
+    }
   }
 }

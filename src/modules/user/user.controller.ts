@@ -82,6 +82,25 @@ export class UserController {
     return this.userService.createUser(createUserDto);
   }
 
+  @Public()
+  @Put('reset/:userId/password')
+  async resetPassword(
+    @Param('userId') userId: string,
+    @Body('password') password: string,
+    @Body('token') token: string,
+  ) {
+    const userToken = await this.userService.getUserToken(token);
+    console.log('userToken', userToken);
+    if (!userToken) {
+      throw new HttpException('Token not found', HttpStatus.NOT_FOUND);
+    }
+    if (userToken.userId !== userId) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.updatePassword(userId, password);
+    return { message: 'Password reset successfully' };
+  }
+
   @Put('update/password')
   async updatePassword(@Req() req: unknown, @Body('password') password: string) {
     const requesterId: string | undefined = (req as RequestWithUser)?.user?.userId;
@@ -89,7 +108,7 @@ export class UserController {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
     await this.userService.updatePassword(requesterId, password);
-    return { message: 'Password updated successfully' };
+    return { message: 'Password reset successfully' };
   }
 
   @Put('update/image')
@@ -169,11 +188,13 @@ export class UserController {
     return { message: 'Verify code deleted successfully' };
   }
 
+  @Public()
   @Post('tokens')
   async createUserToken(@Body(ValidationPipe) createUserTokenDto: CreateUserTokenDto) {
     return this.userService.createUserToken(createUserTokenDto);
   }
 
+  @Public()
   @Get('tokens/:token')
   async getUserToken(@Param('token') token: string) {
     const userToken = await this.userService.getUserToken(token);

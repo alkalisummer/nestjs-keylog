@@ -30,7 +30,6 @@ import { AuthModule } from './core/auth/auth.module';
       // Connection pool settings
       extra: {
         connectionLimit: 10,
-        acquireTimeout: 60000,
         waitForConnections: true,
         queueLimit: 0,
         enableKeepAlive: true,

@@ -184,6 +184,19 @@ export class PostRepository {
       updatePayload.postHtmlCntn = Buffer.from(updateData.postHtmlCntn, 'utf8');
     }
 
+    let isFirstPublish: boolean = false;
+    if (updateData.tempYn === 'N') {
+      const existingPost: Pick<Post, 'tempYn'> | null = await this.postRepository.findOne({
+        where: { postId },
+        select: ['tempYn'],
+      });
+      isFirstPublish = Boolean(existingPost && existingPost.tempYn === 'Y');
+    }
+
+    if (isFirstPublish) {
+      updatePayload.rgsnDttm = timeToString(new Date());
+    }
+
     await this.postRepository.update(postId, updatePayload);
   }
 

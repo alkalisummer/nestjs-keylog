@@ -17,8 +17,7 @@ export class Post {
 
   @Column({
     name: 'post_thmb_img_url',
-    type: 'varchar',
-    length: 200,
+    type: 'text',
     nullable: true,
   })
   postThmbImgUrl?: string;

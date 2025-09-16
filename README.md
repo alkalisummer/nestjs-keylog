@@ -54,7 +54,9 @@ NestJS(Fastify)와 TypeORM을 사용한 Keyolog 백엔드 서버입니다. 모�
 - **Language**: TypeScript
 - **Package Manager**: pnpm
 
-## 📁 프로젝트 구조
+## 📁 아키텍쳐
+
+#### Backend (Nest.js)
 
 ```
 src/

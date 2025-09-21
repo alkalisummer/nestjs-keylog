@@ -37,7 +37,6 @@ export class CommentRepository {
 
   async getCommentList(params: CommentListQueryDto): Promise<CommentListItem[]> {
     const { postId } = params;
-    debugger;
     const result: CommentListItem[] = await this.commentRepository
       .createQueryBuilder('A')
       .select([

@@ -32,6 +32,7 @@ export interface PostDetail {
   authorId: string;
   tempYn: string;
   amntDttm: string;
+  userNickname: string;
 }
 
 export interface RecentPost {
@@ -144,9 +145,11 @@ export class PostRepository {
         'post.post_thmb_img_url AS postThmbImgUrl',
         'CONVERT(post.post_html_cntn USING utf8mb4) AS postHtmlCntn',
         'post.rgsr_id AS authorId',
+        'user.user_nickname AS userNickname',
         'post.temp_yn AS tempYn',
         'post.amnt_dttm AS amntDttm',
       ])
+      .leftJoin('USER', 'user', 'post.rgsr_id = user.user_id')
       .where('post.post_id = :postId', { postId })
       .getRawOne();
 
